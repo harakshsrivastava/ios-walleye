@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "platform": {
+    "device": "Google Pixel 2",
+    "codename": "walleye",
+    "soc": "Qualcomm MSM8998",
+    "purpose": "offline platform description; not a boot or flash configuration"
+  },
+  "cpu": {
+    "architecture": "arm64",
+    "count": 8,
+    "topology_status": "unknown",
+    "boot_cpu_mpidr": null,
+    "clusters": null,
+    "cpus": null
+  },
+  "interrupt_controller": {
+    "type": "gicv3",
+    "distributor": {"base": "0x17a00000", "size": null},
+    "redistributor": {"base": "0x17b00000", "size": null, "stride": "0x20000"},
+    "security_state": "unknown",
+    "system_register_interface": "unknown"
+  },
+  "timer": {
+    "type": "arm-architected-virtual",
+    "intid": 19,
+    "interrupt_class": "ppi",
+    "counter_frequency_hz": null,
+    "routing_state": "unknown"
+  },
+  "diagnostics": {
+    "uart": {"status": "unknown", "type": null, "base": null, "clock_hz": null},
+    "framebuffer": {"status": "unknown", "base": null}
+  },
+  "memory": {
+    "declaration": {"start": "0x80000000", "end_exclusive": "0x17e4c0000"},
+    "loader_safe_ranges": null,
+    "loader_safety_status": "unknown"
+  },
+  "reserved_memory": {
+    "inventory_status": "summary-only",
+    "total_children": 20,
+    "static_children": 15,
+    "dynamic_children": 5,
+    "entries": [],
+    "dynamic_placement_status": "unresolved"
+  },
+  "storage": {
+    "ufs_controller": {"base": "0x01da4000", "size": "0x2500"},
+    "ufs_phy": {"base": "0x01da7000", "size": null},
+    "firmware_link_state": "unknown",
+    "clock_reset_state": "unknown"
+  },
+  "firmware": {
+    "initial_exception_level": null,
+    "psci_version": null,
+    "psci_conduit": null,
+    "cpu_on_supported": null,
+    "secure_monitor_contract": null,
+    "gic_security_ownership": null,
+    "status": "unknown"
+  },
+  "boot_interface": {
+    "active_android_slot": "_a",
+    "active_dtbo_index_observed": 3,
+    "apple_boot_args_layout": null,
+    "fdt_to_adt_contract": null,
+    "bootloader_time_equivalence": "unknown"
+  },
+  "provenance": {
+    "/platform/device": {"status":"project-target","source":"ios-walleye recovery record: Google Pixel 2"},
+    "/platform/codename": {"status":"project-target","source":"ios-walleye recovery record: walleye"},
+    "/platform/soc": {"status":"historical-report","source":"ios-walleye recovery record and MSM8998-compatible live FDT"},
+    "/cpu/architecture": {"status":"historical-report","source":"ios-walleye recovery record: live FDT CPU inventory"},
+    "/cpu/count": {"status":"historical-report","source":"ios-walleye recovery record: eight ARM64 CPUs"},
+    "/interrupt_controller/type": {"status":"historical-report","source":"ios-walleye recovery record: live FDT GICv3"},
+    "/interrupt_controller/distributor/base": {"status":"historical-report","source":"ios-walleye recovery record: live FDT","value_sha256":null},
+    "/interrupt_controller/redistributor/base": {"status":"historical-report","source":"ios-walleye recovery record: live FDT","value_sha256":null},
+    "/interrupt_controller/redistributor/stride": {"status":"historical-report","source":"ios-walleye recovery record: live FDT"},
+    "/timer/type": {"status":"historical-report","source":"ios-walleye recovery record and Phase 2A comparison"},
+    "/timer/intid": {"status":"historical-report","source":"ios-walleye recovery record: virtual timer INTID 19"},
+    "/timer/interrupt_class": {"status":"derived","source":"Arm GIC architectural range: INTID 19 is a PPI"},
+    "/memory/declaration/start": {"status":"historical-report","source":"runtime FDT SHA-256 63514aac0e51cb2467051919686eceef8957be95e1de42970fc5a3f4abfe8960"},
+    "/memory/declaration/end_exclusive": {"status":"derived-from-historical-report","source":"runtime FDT start 0x80000000 plus size 0xfe4c0000"},
+    "/reserved_memory/total_children": {"status":"historical-report","source":"ios-walleye recovery record: runtime FDT reserved-memory summary"},
+    "/reserved_memory/static_children": {"status":"historical-report","source":"ios-walleye recovery record: 15 statically placed children"},
+    "/reserved_memory/dynamic_children": {"status":"historical-report","source":"ios-walleye recovery record: five dynamically declared unplaced children"},
+    "/storage/ufs_controller/base": {"status":"historical-report","source":"ios-walleye recovery record: live FDT UFS controller"},
+    "/storage/ufs_controller/size": {"status":"historical-report","source":"ios-walleye recovery record: live FDT UFS controller size"},
+    "/storage/ufs_phy/base": {"status":"historical-report","source":"ios-walleye recovery record: live FDT UFS PHY"},
+    "/boot_interface/active_android_slot": {"status":"historical-report","source":"ios-walleye recovery record"},
+    "/boot_interface/active_dtbo_index_observed": {"status":"historical-report","source":"ios-walleye recovery record: stock DTBO selection"}
+  }
+}

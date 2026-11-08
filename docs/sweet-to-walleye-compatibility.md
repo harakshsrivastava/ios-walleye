@@ -27,3 +27,18 @@ The strongest commonality is GICv3 plus a `0x20000` redistributor stride and vir
 ## Blocking unknowns
 
 Before any walleye kernel handoff can be evaluated, evidence is still needed for the boot CPU MPIDR and cluster layout, supported architectural ISA features, initial exception level, PSCI conduit/version, GIC security configuration, counter frequency, Apple boot-argument/ADT layout, safe loader allocations after all reservations, and MSM8998 UFS clock/reset/PHY state. No finding here establishes boot compatibility.
+
+## Phase 2B platform-layer status
+
+| Interface | Host-side status | XNU integration status |
+| --- | --- | --- |
+| CPU topology | CPU count validated; topology intentionally unresolved | Blocked on MPIDRs, clusters, boot CPU and PSCI |
+| GICv3 | GICD/GICR bases and stride validated | Blocked on region sizes, affinity discovery and security ownership |
+| Virtual timer | INTID 19 validated as a PPI | Blocked on counter frequency and routing state |
+| Diagnostics | Unknown-state contract validated; no SWEET addresses imported | No diagnostic provider selected |
+| Physical memory | Runtime declaration bounds/alignment validated | Not a loader allocation map |
+| Reserved memory | Counts validated; malformed resolved ranges rejected | Blocked on 15 missing static ranges and five dynamic placements |
+| Firmware/boot arguments | Unknowns represented and guess prevention enforced | Blocked on EL, PSCI, secure monitor and FDT-to-ADT contracts |
+| UFS | Known controller/PHY values validated | Blocked on PHY size, clocks, resets and firmware link state |
+
+The descriptor's `valid_with_unresolved` result means the known model is internally consistent. It is not a readiness or bootability state.
