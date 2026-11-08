@@ -196,3 +196,19 @@ M2 directly rechecked the complete SWEET-patched tree at the pinned XNU commit a
 | `iokit/Kernel/IODeviceTreeSupport.cpp` | `IODTGetLoaderInfo`, registry construction | `/chosen/memory-map` properties become loader information and registry content |
 
 These mappings are direct source observations. The JSON contract's required revision/version 2 is an M2 producer policy for the complete declared structure; the inspected early consumers do not independently authenticate the revision fields. Firmware register state, physical placement, memory ownership and the transformation producer remain unresolved.
+
+## Phase 3 M3A Platform Expert inspection
+
+M3A directly inspected the complete 81-patch SWEET tree and added a separate compile-only source boundary:
+
+| Path | Symbol or interface | M3A result |
+| --- | --- | --- |
+| `iokit/Kernel/IOPlatformExpert.cpp` | `IOPlatformExpert::start` | Common startup establishes platform globals, power domains, clocks, interrupt-controller storage, and configuration; WALLEYE does not call it while M2 inputs are unresolved |
+| `iokit/Kernel/IOPlatformExpert.cpp` | `IODTPlatformExpert::probe`, `configure`, `processTopLevel`, `createNubs` | `IONameMatch` is structurally required and base configuration publishes nodes; WALLEYE uses a disabled sentinel and overrides publication with a no-op |
+| `iokit/Kernel/IOStartIOKit.cpp` | `InitIOKit`, `StartIOKitMatching` | The root provider is created from an already-ingested Apple tree before catalogue matching; M3A does not alter this path |
+| `iokit/Kernel/arm/SweetPlatformExpert.cpp` | `SweetPlatformExpert::start`, `processTopLevel` | SWEET starts the base expert and publishes CPU, top-level, and `/arm-io` nubs; none of that behavior is copied |
+| `iokit/Kernel/arm/WalleyePlatformExpert.cpp` | `WalleyePlatformExpert` | New source: compile-only class, disabled match, failed startup, no node publication, and explicit unsupported firmware/platform operations |
+| `iokit/KernelConfigTables.cpp` | `gIOKernelConfigTables` | Adds only a WALLEYE-guarded Platform Expert personality; no WALLEYE CPU or peripheral personality exists |
+| `iokit/conf/files.arm64` | source registration | Adds the WALLEYE translation unit using the established empty-on-other-boards convention |
+
+The sentinel `__walleye_m3a_disabled__` is not an ADT compatible claim. Verified `walleye` / `Google Pixel 2` board names remain separate from the unresolved final ADT identity. Exact patch and compile evidence is in `config/walleye-platform-expert.json` and `evidence/walleye-m3a-validation.json`.

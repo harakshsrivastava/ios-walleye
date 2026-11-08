@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "milestone": "M3A",
+  "checkpoint_commit": "dc489ef091feaebc799d3e06b6bd37089c105bc7",
+  "source_baseline": {
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "base_project_commit": "40c7668670cc68aa8a8974686d20ec328fd82b68"
+  },
+  "full_patch_stack": {
+    "status": "passed_with_existing_sdk_staging_limitation",
+    "basis": "surviving XNU worktree previously verified with all SWEET patches; copied without reapplying the 81-patch operation",
+    "sweet_patches_applied": 81,
+    "m1_applied": true,
+    "m3a_applied": true,
+    "m3a_apply_check": "passed",
+    "conflicts": [],
+    "sdk_staging_limitation": "xcrun and generated Apple build headers remain unavailable; patch applicability is unaffected",
+    "applied_source_hashes": {
+      "iokit/Kernel/arm/WalleyePlatformExpert.cpp": "6e9539a03b7ed5b0a9b7fad4cd8f237e24defad2f9b3500429f31ed7d78876c6",
+      "pexpert/pexpert/arm64/WALLEYE.h": "ea1e77d3f6f5a969ab3c24b6ca07eeea21daa94b2a09bfc2d16dd04b51e35a3f"
+    }
+  },
+  "compile_validation": {
+    "compiler": "Debian clang version 19.1.7 (3+b1)",
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": [
+      "-march=armv8-a",
+      "-mno-outline-atomics"
+    ],
+    "actual_translation_unit": {
+      "source": "iokit/Kernel/arm/WalleyePlatformExpert.cpp",
+      "working_directory": "/workspace/work/xnu-walleye-m3a-check",
+      "command": "LD_LIBRARY_PATH=/workspace/toolchains/llvm19/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu SOURCE_DATE_EPOCH=0 /workspace/toolchains/llvm19/usr/bin/clang++-19 --target=arm64-apple-darwin22 -march=armv8-a -mno-outline-atomics -std=gnu++17 -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-exceptions -fno-rtti -fno-stack-protector -DARM64_BOARD_CONFIG_WALLEYE=1 -DKERNEL=1 -DKERNEL_PRIVATE=1 -I. -IEXTERNAL_HEADERS -Ibsd -Iiokit -Ilibkern -Ilibsa -Iosfmk -Ipexpert -Isecurity -I/workspace/toolchains/walleye-zig/lib/python3.12/site-packages/ziglang/lib/libc/include/any-macos-any -c iokit/Kernel/arm/WalleyePlatformExpert.cpp -o /workspace/ios-walleye/build/walleye-m3a/actual-run1/WalleyePlatformExpert.o",
+      "status": "blocked",
+      "exit_code": 1,
+      "blocker": "missing generated XNU MIG header mach/clock_reply_server.h",
+      "walleye_source_diagnostics_before_blocker": [],
+      "object_generated": false
+    },
+    "policy_probe": {
+      "source": "overlays/walleye/platform_expert_probe.cpp",
+      "command": "LD_LIBRARY_PATH=/workspace/toolchains/llvm19/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu SOURCE_DATE_EPOCH=0 /workspace/toolchains/llvm19/usr/bin/clang++-19 --target=arm64-apple-darwin22 -march=armv8-a -mno-outline-atomics -std=c++17 -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-exceptions -fno-rtti -fno-stack-protector -nostdinc -I /workspace/work/xnu-walleye-m3a-check/pexpert -c overlays/walleye/platform_expert_probe.cpp -o build/walleye-m3a/probe-runN/WalleyePlatformExpertPolicy.o",
+      "status": "passed",
+      "runs": 2,
+      "byte_identical": true,
+      "object_size_bytes": 400,
+      "object_sha256": "67a7cce9bcaf9c4c7f9d7ebd2fbd931464f4cfbe7478cf4bdcfe3910c2d7a69a",
+      "format": "Mach-O 64-bit arm64",
+      "filetype": "MH_OBJECT",
+      "symbols": [
+        "ltmp0",
+        "_walleye_m3a_platform_expert_probe"
+      ],
+      "relocations": 0,
+      "linked": false
+    },
+    "kernel_build": "not_attempted: Apple SDK/KDK and generated XNU build products are unavailable"
+  },
+  "boot_contract": {
+    "status": "valid_with_unresolved",
+    "errors": [],
+    "unresolved_count": 38,
+    "requirements_resolved_by_m3a": 0,
+    "boot_ready": false
+  },
+  "inputs": {
+    "config/walleye-platform-expert.json": "65e2e05fd5defdb8677f97f23ab9a45107188d53ad020d0197a1d5a1659a52a3",
+    "patches/xnu/0001-walleye-build-skeleton.patch": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea",
+    "patches/xnu/0002-walleye-platform-expert.patch": "88c4d164e42edf65c6af0fa9b9fa31f6f75f137dd9af973003e14e07aeaebf82",
+    "overlays/walleye/platform_expert_probe.cpp": "96545f3f0c457b847ec20280ce2f737da1d75bbbd84cabe295b58378a7dee1ec",
+    "tools/validate_walleye_platform_expert.py": "28bc9e7c58add90b556252a0aaa92191d53b2d1f27a8a2a3519762792a8609c9",
+    "tests/test_walleye_platform_expert.py": "db305bdef683e3ea565b73cdb34520260bbe2adaf81fd67eb83be65be2770a4d"
+  },
+  "regression_suite": {
+    "framework": "python3 -m unittest discover -s tests -v",
+    "tests_run": 67,
+    "failures": 0,
+    "errors": 0,
+    "result": "passed"
+  },
+  "claims": {
+    "kernel_linked": false,
+    "kernel_built": false,
+    "boot_image_generated": false,
+    "device_accessed": false,
+    "boot_ready": false
+  }
+}

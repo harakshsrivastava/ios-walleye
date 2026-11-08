@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "milestone": "M3A",
+  "configuration": "WALLEYE",
+  "source_baseline": {
+    "xnu_release": "xnu-8796.141.3",
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "sweet_patch_count": 81,
+    "m1_commit": "e81ba5a310410e38a5dd57635b20ac897da76881",
+    "m2_commit": "40c7668670cc68aa8a8974686d20ec328fd82b68"
+  },
+  "patch_sequence": [
+    {
+      "path": "patches/xnu/0001-walleye-build-skeleton.patch",
+      "sha256": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea"
+    },
+    {
+      "path": "patches/xnu/0002-walleye-platform-expert.patch",
+      "sha256": "88c4d164e42edf65c6af0fa9b9fa31f6f75f137dd9af973003e14e07aeaebf82"
+    }
+  ],
+  "source_integration": {
+    "class": "WalleyePlatformExpert",
+    "base_class": "IODTPlatformExpert",
+    "translation_unit": "iokit/Kernel/arm/WalleyePlatformExpert.cpp",
+    "source_list": "iokit/conf/files.arm64",
+    "personality_table": "iokit/KernelConfigTables.cpp",
+    "build_guard": "ARM64_BOARD_CONFIG_WALLEYE",
+    "board_guard": "WALLEYE",
+    "provider_class": "IOPlatformExpertDevice",
+    "io_name_match": "__walleye_m3a_disabled__",
+    "match_token_status": "compile-only-sentinel",
+    "runtime_match_enabled": false,
+    "final_adt_identity": {
+      "value": null,
+      "status": "unresolved"
+    }
+  },
+  "verified_identity": {
+    "target_name": "walleye",
+    "product_name": "Google Pixel 2",
+    "provenance": "config/msm8998-platform.json#/identity",
+    "does_not_define_adt_compatible": true
+  },
+  "behavior": {
+    "class_compiled": true,
+    "start_supported": false,
+    "start_result": false,
+    "adt_node_publication": "none",
+    "halt_restart": "unsupported:-1",
+    "sleep": "fail-closed:panic",
+    "platform_functions": "unsupported:kIOReturnUnsupported",
+    "firmware_calls": false,
+    "smp": false,
+    "gic_initialization": false,
+    "timer_initialization": false,
+    "uart": false,
+    "framebuffer": false,
+    "storage": false
+  },
+  "compiler": {
+    "version": "Debian clang version 19.1.7 (3+b1)",
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": [
+      "-march=armv8-a",
+      "-mno-outline-atomics"
+    ],
+    "actual_translation_unit": {
+      "status": "blocked_by_generated_xnu_headers",
+      "first_missing_header": "mach/clock_reply_server.h",
+      "walleye_diagnostic_before_blocker": false,
+      "object_generated": false
+    },
+    "policy_probe": {
+      "source": "overlays/walleye/platform_expert_probe.cpp",
+      "source_sha256": "96545f3f0c457b847ec20280ce2f737da1d75bbbd84cabe295b58378a7dee1ec",
+      "status": "passed",
+      "runs": 2,
+      "byte_identical": true,
+      "object_format": "Mach-O 64-bit arm64 MH_OBJECT",
+      "size_bytes": 400,
+      "sha256": "67a7cce9bcaf9c4c7f9d7ebd2fbd931464f4cfbe7478cf4bdcfe3910c2d7a69a",
+      "linked": false
+    }
+  },
+  "m2_boundary": {
+    "contract": "config/walleye-boot-contract.json",
+    "status": "valid_with_unresolved",
+    "unresolved_count": 38,
+    "boot_ready": false,
+    "requirements_resolved_by_m3a": 0
+  },
+  "forbidden_source_fragments": [
+    "xiaomi,sweet",
+    "qcom,kryo470",
+    "SweetCPU",
+    "SweetPlatformExpert",
+    "smc #0",
+    "0x9c000000"
+  ],
+  "claims": {
+    "kernel_linked": false,
+    "kernel_built": false,
+    "boot_image_generated": false,
+    "device_accessed": false,
+    "boot_ready": false
+  }
+}

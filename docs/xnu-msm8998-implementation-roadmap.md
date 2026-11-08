@@ -29,12 +29,15 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 
 ## M3 — Walleye Platform Expert
 
-- Objective: implement compile-only platform identity and safe nub publication.
-- Components: proposed `iokit/Kernel/arm/WalleyePlatformExpert.cpp`, `iokit/KernelConfigTables.cpp`, `iokit/conf/files.arm64`.
-- Dependencies: M1, M2, verified ADT identities.
-- Offline tests: registry model, match-table scan, node allowlist/exclusion fixtures.
-- Acceptance: no SWEET match reuse; unknown MMIO nodes remain unpublished; walleye identity exact.
-- Blocker: final ADT compatible/name contract.
+- M3A status: completed as a fail-closed, compile-only class and catalogue skeleton on `feature/walleye-platform-expert`.
+- M3A components: `patches/xnu/0002-walleye-platform-expert.patch`, `iokit/Kernel/arm/WalleyePlatformExpert.cpp`, `iokit/KernelConfigTables.cpp`, and `iokit/conf/files.arm64`.
+- M3A outcome: class and verified board names are distinct from SWEET; the match token is an explicit disabled sentinel; `start()` returns false; no ADT nodes or hardware services are published.
+- M3A compile result: the post-patch policy probe produced reproducible ARM64 Mach-O objects; the actual IOKit translation unit is blocked by unavailable generated XNU MIG headers.
+- M3B objective: validate the final ADT root identity and a minimal node allowlist with host-side registry fixtures before enabling any base Platform Expert startup.
+- Dependencies: M1, M2, a validated ADT producer/identity, and base-start property requirements.
+- Offline tests: registry model, exact match-table scan, node allowlist/exclusion fixtures, and unknown-MMIO rejection.
+- Acceptance: no SWEET match reuse; unknown MMIO nodes remain unpublished; final identity has evidence; runtime startup remains disabled until every gate is satisfied.
+- Blocker: final ADT compatible/name contract and safe-node schema.
 - Complexity: medium.
 
 ## M4 — Policy-driven GICv3 and timer layer
@@ -81,10 +84,10 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 
 - M1 is complete at the compile-only boundary; it does not authorize hardware initialization.
 - M2's schema/validator portion is complete; production of a handoff remains rejected while reservation and producer evidence is missing.
-- M3 can compile against fixtures but must not claim runtime node safety before M2 resolves.
+- M3A is compile-only and fail-closed. M3B may validate registry fixtures but must not enable runtime startup or claim node safety before its ADT gates resolve.
 - M4–M5 remain non-activating until their named evidence gates close.
 - M7 must not be started by copying SWEET's `smc #0` path.
 
-The next implementation milestone is M3's compile-only Platform Expert boundary. Final matching and node publication remain blocked until the ADT identity/schema and safe-node policy resolve.
+The next implementation milestone is M3B's offline ADT identity and safe-node policy. Final matching, base-class startup, and node publication remain blocked until that evidence resolves.
 
 Machine-readable milestone fields, dependencies and acceptance criteria are in `config/xnu-msm8998-port-plan.json` and are enforced by `tools/validate_xnu_msm8998_plan.py`.

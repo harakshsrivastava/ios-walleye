@@ -1,0 +1,178 @@
+diff --git a/iokit/KernelConfigTables.cpp b/iokit/KernelConfigTables.cpp
+--- a/iokit/KernelConfigTables.cpp
++++ b/iokit/KernelConfigTables.cpp
+@@ -82,6 +82,14 @@ const char * gIOKernelConfigTables =
+     "     'IOProviderClass' = IOResources;"
+     "     'IOMatchCategory' = SweetBattery;"
+     "   },"
++#endif
++#if defined(ARM64_BOARD_CONFIG_WALLEYE)
++    "   {"
++    "     'IOClass'         = WalleyePlatformExpert;"
++    "     'IOProviderClass' = IOPlatformExpertDevice;"
++    "     'IONameMatch'     = '__walleye_m3a_disabled__';"
++    "     'IOProbeScore'    = 10000:32;"
++    "   },"
+ #endif
+     "   {"
+     "     'IOClass'         = IOPanicPlatform;"
+diff --git a/iokit/conf/files.arm64 b/iokit/conf/files.arm64
+--- a/iokit/conf/files.arm64
++++ b/iokit/conf/files.arm64
+@@ -9,6 +9,9 @@ iokit/Kernel/arm/AppleARMSMP.cpp    optional iokitcpp
+ # SWEET device-tree platform (empty translation unit on other boards)
+ iokit/Kernel/arm/SweetPlatformExpert.cpp                         optional iokitcpp
+ 
++# WALLEYE compile-only platform boundary (empty translation unit elsewhere)
++iokit/Kernel/arm/WalleyePlatformExpert.cpp                       optional iokitcpp
++
+ iokit/Kernel/arm/SweetCPU.cpp                                    optional iokitcpp
+ iokit/Kernel/arm/SweetEntitlements.cpp                           optional iokitcpp
+ iokit/Kernel/arm/SweetKeyStore.cpp                               optional iokitcpp
+diff --git a/iokit/Kernel/arm/WalleyePlatformExpert.cpp b/iokit/Kernel/arm/WalleyePlatformExpert.cpp
+new file mode 100644
+--- /dev/null
++++ b/iokit/Kernel/arm/WalleyePlatformExpert.cpp
+@@ -0,0 +1,114 @@
++/*
++ * Compile-only Platform Expert boundary for Google Pixel 2 (walleye).
++ *
++ * M3A registers the class in the WALLEYE build but deliberately cannot match
++ * or start it.  A validated Apple Device Tree identity and the remaining M2
++ * boot-contract inputs are prerequisites for enabling either operation.
++ */
++#include <pexpert/arm64/board_config.h>
++
++#if defined(WALLEYE)
++#include <IOKit/IOPlatformExpert.h>
++#include <IOKit/IOLib.h>
++
++#if !WALLEYE_ENABLE_PLATFORM_EXPERT
++#error "WALLEYE Platform Expert source requires its compile-time boundary"
++#endif
++
++#if WALLEYE_PLATFORM_EXPERT_START_SUPPORTED
++#error "WALLEYE M3A must not enable runtime Platform Expert startup"
++#endif
++
++class WalleyePlatformExpert : public IODTPlatformExpert {
++	OSDeclareDefaultStructors(WalleyePlatformExpert);
++
++public:
++	bool start(IOService *provider) APPLE_KEXT_OVERRIDE;
++	void processTopLevel(IORegistryEntry *root) APPLE_KEXT_OVERRIDE;
++	const char *deleteList(void) APPLE_KEXT_OVERRIDE;
++	const char *excludeList(void) APPLE_KEXT_OVERRIDE;
++	int haltRestart(unsigned int type) APPLE_KEXT_OVERRIDE;
++	void sleepKernel(void) APPLE_KEXT_OVERRIDE;
++	IOReturn callPlatformFunction(const OSSymbol *functionName,
++	    bool waitForFunction, void *param1, void *param2,
++	    void *param3, void *param4) APPLE_KEXT_OVERRIDE;
++	bool getTargetName(char *name, int maxLength) APPLE_KEXT_OVERRIDE;
++	bool getProductName(char *name, int maxLength) APPLE_KEXT_OVERRIDE;
++};
++
++OSDefineMetaClassAndStructors(WalleyePlatformExpert, IODTPlatformExpert);
++
++bool
++WalleyePlatformExpert::start(IOService *provider)
++{
++	(void)provider;
++	IOLog("WALLEYE: Platform Expert startup is unsupported in M3A\n");
++	return false;
++}
++
++void
++WalleyePlatformExpert::processTopLevel(IORegistryEntry *root)
++{
++	/* Publishing unvalidated ADT nodes is intentionally unsupported. */
++	(void)root;
++}
++
++const char *
++WalleyePlatformExpert::deleteList(void)
++{
++	return "()";
++}
++
++const char *
++WalleyePlatformExpert::excludeList(void)
++{
++	return "()";
++}
++
++int
++WalleyePlatformExpert::haltRestart(unsigned int type)
++{
++	(void)type;
++	return -1;
++}
++
++void
++WalleyePlatformExpert::sleepKernel(void)
++{
++	panic("WALLEYE: sleep firmware contract is unresolved");
++}
++
++IOReturn
++WalleyePlatformExpert::callPlatformFunction(const OSSymbol *functionName,
++    bool waitForFunction, void *param1, void *param2,
++    void *param3, void *param4)
++{
++	(void)functionName;
++	(void)waitForFunction;
++	(void)param1;
++	(void)param2;
++	(void)param3;
++	(void)param4;
++	return kIOReturnUnsupported;
++}
++
++bool
++WalleyePlatformExpert::getTargetName(char *name, int maxLength)
++{
++	if (name == NULL || maxLength <= 0) {
++		return false;
++	}
++	strlcpy(name, "walleye", (size_t)maxLength);
++	return true;
++}
++
++bool
++WalleyePlatformExpert::getProductName(char *name, int maxLength)
++{
++	if (name == NULL || maxLength <= 0) {
++		return false;
++	}
++	strlcpy(name, "Google Pixel 2", (size_t)maxLength);
++	return true;
++}
++#endif /* WALLEYE */
+diff --git a/pexpert/pexpert/arm64/WALLEYE.h b/pexpert/pexpert/arm64/WALLEYE.h
+--- a/pexpert/pexpert/arm64/WALLEYE.h
++++ b/pexpert/pexpert/arm64/WALLEYE.h
+@@ -16,7 +16,8 @@
+ #define WALLEYE                   1
+ #define WALLEYE_COMPILE_ONLY      1
+ 
+-#define WALLEYE_ENABLE_PLATFORM_EXPERT  0
++#define WALLEYE_ENABLE_PLATFORM_EXPERT  1
++#define WALLEYE_PLATFORM_EXPERT_START_SUPPORTED 0
+ #define WALLEYE_ENABLE_FIRMWARE_CALLS   0
+ #define WALLEYE_ENABLE_SMP              0
+ #define WALLEYE_ENABLE_GIC              0
+@@ -25,11 +26,11 @@
+ #define WALLEYE_ENABLE_FRAMEBUFFER      0
+ #define WALLEYE_ENABLE_STORAGE          0
+ 
+-#if WALLEYE_ENABLE_PLATFORM_EXPERT || WALLEYE_ENABLE_FIRMWARE_CALLS || \
+-    WALLEYE_ENABLE_SMP || WALLEYE_ENABLE_GIC || WALLEYE_ENABLE_TIMER || \
++#if WALLEYE_ENABLE_FIRMWARE_CALLS || WALLEYE_ENABLE_SMP || \
++    WALLEYE_ENABLE_GIC || WALLEYE_ENABLE_TIMER || \
+     WALLEYE_ENABLE_UART || WALLEYE_ENABLE_FRAMEBUFFER || \
+     WALLEYE_ENABLE_STORAGE
+-#error "WALLEYE M1 is compile-only; hardware initialization must remain disabled"
++#error "WALLEYE M3A is compile-only; hardware initialization must remain disabled"
+ #endif
+ 
+ /* Conservative architectural compile baseline; optional extensions omitted. */
