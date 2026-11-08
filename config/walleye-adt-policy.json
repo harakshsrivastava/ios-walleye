@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "policy_id": "ios-walleye-adt-safe-nodes",
+  "policy_version": 1,
+  "fixture_format": "walleye-synthetic-adt-registry-v1",
+  "scope": "offline-structural-validation-only",
+  "native_binary_adt_parser": false,
+  "boot_compatibility_claimed": false,
+  "identity_contract": {
+    "physical_board": {
+      "manufacturer": "Google",
+      "product": "Pixel 2",
+      "codename": "walleye",
+      "soc": "MSM8998",
+      "status": "verified-historical-evidence",
+      "provenance": "phase2b-platform-identity"
+    },
+    "adt_root": {
+      "status": "unresolved",
+      "match_property": null,
+      "match_value": null,
+      "producer": null,
+      "producer_status": "unresolved",
+      "android_identity_is_adt_identity": false
+    },
+    "inspected_xnu_match_properties": [
+      "name",
+      "compatible",
+      "device_type",
+      "model"
+    ],
+    "inspected_early_identity_properties": [
+      "name",
+      "model",
+      "target-type"
+    ],
+    "identity_properties_allowed_while_unresolved": false
+  },
+  "limits": {
+    "maximum_node_count": 2,
+    "maximum_tree_depth": 1,
+    "maximum_properties_per_node": 4,
+    "maximum_property_size_bytes": 64,
+    "maximum_fixture_size_bytes": 4096
+  },
+  "safe_nodes": [
+    {
+      "path": "/",
+      "node_type": "root",
+      "required_properties": [
+        "name"
+      ],
+      "allowed_properties": {
+        "name": {
+          "type": "string",
+          "constant": "device-tree",
+          "provenance": "xnu-pe-init-root-lookup"
+        }
+      },
+      "allowed_children": [
+        "/chosen"
+      ],
+      "publishes_iokit_nub": false
+    },
+    {
+      "path": "/chosen",
+      "node_type": "structural",
+      "required_properties": [
+        "name"
+      ],
+      "allowed_properties": {
+        "name": {
+          "type": "string",
+          "constant": "chosen",
+          "provenance": "xnu-pe-init-chosen-lookup"
+        }
+      },
+      "allowed_children": [],
+      "publishes_iokit_nub": false
+    }
+  ],
+  "forbidden_node_prefixes": [
+    "/arm-io",
+    "/cpus",
+    "/gpu",
+    "/display",
+    "/storage",
+    "/ufs",
+    "/radio",
+    "/modem",
+    "/security",
+    "/chosen/memory-map"
+  ],
+  "forbidden_identity_fragments": [
+    "sweet",
+    "xiaomi",
+    "redmi",
+    "qcom,kryo470"
+  ],
+  "runtime_gates": {
+    "platform_expert_match_enabled": false,
+    "platform_expert_start_enabled": false,
+    "iokit_node_publication_enabled": false,
+    "hardware_initialization_enabled": false,
+    "native_adt_ingestion_enabled": false
+  },
+  "project_dependencies": {
+    "boot_contract": "config/walleye-boot-contract.json",
+    "platform_descriptor": "config/msm8998-platform.json",
+    "platform_expert": "config/walleye-platform-expert.json",
+    "port_plan": "config/xnu-msm8998-port-plan.json",
+    "m2_required_status": "valid_with_unresolved",
+    "m2_required_unresolved_count": 38,
+    "m3a_required_match_enabled": false,
+    "m3a_required_start_supported": false,
+    "m3a_required_node_publication": "none"
+  },
+  "provenance": {
+    "phase2b-platform-identity": {
+      "kind": "project-config",
+      "path": "config/msm8998-platform.json",
+      "pointer": "/platform"
+    },
+    "xnu-pe-init-root-lookup": {
+      "kind": "direct-source-inspection",
+      "path": "pexpert/arm/pe_init.c",
+      "symbol": "PE_init_platform"
+    },
+    "xnu-pe-init-chosen-lookup": {
+      "kind": "direct-source-inspection",
+      "path": "pexpert/arm/pe_init.c",
+      "symbol": "PE_init_platform"
+    },
+    "xnu-root-matching": {
+      "kind": "direct-source-inspection",
+      "path": "iokit/Kernel/IODeviceTreeSupport.cpp",
+      "symbol": "IODTCompareNubName"
+    },
+    "m3a-fail-closed": {
+      "kind": "project-patch",
+      "path": "patches/xnu/0002-walleye-platform-expert.patch",
+      "symbol": "WalleyePlatformExpert::start"
+    }
+  },
+  "unresolved": [
+    "final ADT root match property and value",
+    "production ADT producer and serialization",
+    "native binary ADT equivalence to synthetic fixtures",
+    "all 38 M2 boot-critical requirements"
+  ]
+}
