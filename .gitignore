@@ -1,0 +1,11 @@
+work/
+*.zip
+*.dtb
+*.img
+*.bin
+*.elf
+*.macho
+kernel.*
+__pycache__/
+.pytest_cache/
+

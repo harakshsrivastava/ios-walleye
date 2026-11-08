@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-08T11:10:00Z",
+  "project": "ios-walleye",
+  "recovery": {
+    "original_workspace_available": false,
+    "surviving_original_project_files": [],
+    "authorized_github_repository_match": false,
+    "expected_archive": {
+      "name": "ios-walleye-xnu-build-feasibility.zip",
+      "expected_sha256": "2e69125ebc608bb96bd4782b8f4ca350be4e7d5cd5855a6f561854873a2f7b71",
+      "found": false
+    }
+  },
+  "source_baselines": {
+    "apple_xnu": {
+      "repository": "apple-oss-distributions/xnu",
+      "release": "xnu-8796.141.3",
+      "commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+      "commit_api_verified": true
+    },
+    "ios_sweet": {
+      "repository": "dipa-studio/ios-sweet",
+      "commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+      "commit_api_verified": true,
+      "patch_files_at_commit": 81
+    },
+    "darwin_xnu_build": {
+      "repository": "blacktop/darwin-xnu-build",
+      "commit": "663906528d1cd5ea8fde7de6f16de73db9511549",
+      "commit_api_verified": true
+    }
+  },
+  "precompiled_reference": {
+    "repository": "dipa-studio/ios-sweet",
+    "workflow_name": "xnu",
+    "workflow_id": 384705039,
+    "run_id": 39158169212,
+    "run_number": 94,
+    "run_conclusion": "success",
+    "run_created_at": "2026-10-18T19:18:32Z",
+    "head_sha": "fdad0de8dc0e75c5ea84762adc03f7232dc91f19",
+    "artifact_id": 12147422947,
+    "artifact_name": "xnu-kernel",
+    "artifact_expired_at_check": false,
+    "artifact_declared_expires_at": "2027-01-16T19:18:32Z",
+    "artifact_zip_sha256": "28a040196aa632af45b7ba6415831a09dd5098f7f9338b5ce6d1c146a9982b56",
+    "kernel": {
+      "name": "kernel.development.sweet",
+      "sha256": "d9cb893bd2baf841e94cd2001f0ec70c0fea42f045f87f14ae807e4ebc50e1e5",
+      "artifact_sha256s_match": true,
+      "size_bytes": 17206064,
+      "format": "Mach-O 64-bit",
+      "cpu": "arm64",
+      "filetype": "MH_EXECUTE",
+      "flags": ["MH_NOUNDEFS", "MH_PIE"],
+      "macho_ncmds": 26,
+      "macho_sizeofcmds": 5608,
+      "darwin_version_string": "Darwin Kernel Version 22.6.0: Mon Aug 14 05:06:07 UTC 2023; runner:xnu-8796.141.3",
+      "pixel_2_compatible": false,
+      "classification": "Redmi SWEET reference only"
+    },
+    "published_releases_found": 0
+  },
+  "historical_recovery_record": {
+    "revalidated": false,
+    "reason": "Original device artifacts, project source tree, and prior test suite were unavailable",
+    "reported_test_result": {"run": 152, "passed": 148, "skipped": 4},
+    "reported_live_fdt_sha256": "63514aac0e51cb2467051919686eceef8957be95e1de42970fc5a3f4abfe8960",
+    "reported_object_sha256": {
+      "bzero.o": "0246b91674dd0c31d3e0635fd3e22bcd72caaf3532baf90957a82a344fdf8700",
+      "strncmp.o": "29c82425450252b787e2f68e59c9e1eb5faee2076b6b2656150ce44b0820093b",
+      "strnlen.o": "56af4b1de696735845760a2b5a74a93982deabc25358e46359035be235860ef6"
+    }
+  },
+  "constraints_observed": {
+    "physical_device_access": false,
+    "flashing_or_booting": false,
+    "paid_infrastructure": false
+  }
+}
+
