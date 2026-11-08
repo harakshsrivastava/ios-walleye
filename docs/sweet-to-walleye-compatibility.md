@@ -42,3 +42,24 @@ Before any walleye kernel handoff can be evaluated, evidence is still needed for
 | UFS | Known controller/PHY values validated | Blocked on PHY size, clocks, resets and firmware link state |
 
 The descriptor's `valid_with_unresolved` result means the known model is internally consistent. It is not a readiness or bootability state.
+
+## Phase 2C source-level disposition
+
+| SWEET/XNU component | Minimal walleye disposition | Evidence gate |
+| --- | --- | --- |
+| Host Mach-O and descriptor validators | Directly reusable | Existing regression suite |
+| Generic ARM64 `_start`/`start_first_cpu` | Reuse with source modifications | Entry EL/MMU/cache/register contract; remove framebuffer writes |
+| ARM64 `boot_args` layout | Reuse with configuration changes | Validated producer, pointers and complete ownership map |
+| `SweetPlatformExpert` and `xiaomi,sweet` | Replace | Verified walleye ADT identity and safe-node policy |
+| `IODTPlatformExpert` nub mechanism | Reuse with source modifications | Allowlisted validated nodes only |
+| SWEET/Kryo 470 topology and `SweetCPU` | Replace | Walleye MPIDRs/clusters/cache and firmware contract |
+| Generic `ml_parse_cpu_topology` | Reuse with configuration changes | Verified CPU-node encoding |
+| GICv3 mapping/redistributor scan | Reuse with source modifications | Region sizes, MPIDRs, security ownership and ICC access |
+| SWEET Group 1 IRQ dispatch | Blocked by missing evidence | IRQ/FIQ/group delivery behavior |
+| Architecture-generic virtual-timer bookkeeping | Directly reusable after gating | CNTFRQ, access and route |
+| SWEET framebuffer diagnostics | Replace | Never reuse `0x9c000000` |
+| UART provider | Blocked by missing evidence | Type, base, clock and readiness |
+| `arm_vm_init`/pmap core | Reuse with source modifications | Complete reservations and `topOfKernelData` contract |
+| SWEET PSCI SMC/secondary entry | Blocked by missing evidence | PSCI conduit/version, entry EL and coherency |
+
+The next source milestone is a compile-only WALLEYE machine-configuration skeleton with all unresolved hardware services disabled. It does not enable a boot path.

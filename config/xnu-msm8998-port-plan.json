@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "plan_id": "ios-walleye-xnu-msm8998-minimal-port",
+  "boot_readiness_claimed": false,
+  "integration": {
+    "base_branch": "feature/msm8998-platform",
+    "recovery_commit": "9c82853fb25d8b0a2483340a39941f678c335c87",
+    "phase_2a_commit": "376619fa7347874d0f31787ea23044743ce394f4",
+    "phase_2b_commit": "2355504cfa1bb53bbaedeb0068b55b206084f0fe",
+    "phase_2a_is_ancestor_of_phase_2b": true
+  },
+  "source_baseline": {
+    "xnu_repository": "apple-oss-distributions/xnu",
+    "xnu_release": "xnu-8796.141.3",
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_repository": "dipa-studio/ios-sweet",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "sweet_patch_count": 81,
+    "inspection_scope": "Apple baseline plus directly applied SWEET patches 0001-0018, 0065, and 0078 for platform-path inspection"
+  },
+  "hardware_claims": [
+    {"id":"cpu-count","value":8,"descriptor_path":"/cpu/count","provenance":"config/msm8998-platform.json#/provenance/~1cpu~1count","status":"historical-report"},
+    {"id":"gic-version","value":"gicv3","descriptor_path":"/interrupt_controller/type","provenance":"config/msm8998-platform.json#/provenance/~1interrupt_controller~1type","status":"historical-report"},
+    {"id":"gicd-base","value":"0x17a00000","descriptor_path":"/interrupt_controller/distributor/base","provenance":"config/msm8998-platform.json#/provenance/~1interrupt_controller~1distributor~1base","status":"historical-report"},
+    {"id":"gicr-base","value":"0x17b00000","descriptor_path":"/interrupt_controller/redistributor/base","provenance":"config/msm8998-platform.json#/provenance/~1interrupt_controller~1redistributor~1base","status":"historical-report"},
+    {"id":"gicr-stride","value":"0x20000","descriptor_path":"/interrupt_controller/redistributor/stride","provenance":"config/msm8998-platform.json#/provenance/~1interrupt_controller~1redistributor~1stride","status":"historical-report"},
+    {"id":"virtual-timer-intid","value":19,"descriptor_path":"/timer/intid","provenance":"config/msm8998-platform.json#/provenance/~1timer~1intid","status":"historical-report"},
+    {"id":"memory-start","value":"0x80000000","descriptor_path":"/memory/declaration/start","provenance":"config/msm8998-platform.json#/provenance/~1memory~1declaration~1start","status":"historical-report"},
+    {"id":"memory-end-exclusive","value":"0x17e4c0000","descriptor_path":"/memory/declaration/end_exclusive","provenance":"config/msm8998-platform.json#/provenance/~1memory~1declaration~1end_exclusive","status":"derived-from-historical-report"},
+    {"id":"reserved-children","value":20,"descriptor_path":"/reserved_memory/total_children","provenance":"config/msm8998-platform.json#/provenance/~1reserved_memory~1total_children","status":"historical-report"},
+    {"id":"dynamic-reservations","value":5,"descriptor_path":"/reserved_memory/dynamic_children","provenance":"config/msm8998-platform.json#/provenance/~1reserved_memory~1dynamic_children","status":"historical-report"},
+    {"id":"ufs-controller-base","value":"0x01da4000","descriptor_path":"/storage/ufs_controller/base","provenance":"config/msm8998-platform.json#/provenance/~1storage~1ufs_controller~1base","status":"historical-report"}
+  ],
+  "inspected_source_paths": [
+    "config/MASTER.arm64.sweet",
+    "iokit/Kernel/IOPlatformExpert.cpp",
+    "iokit/Kernel/arm/SweetCPU.cpp",
+    "iokit/Kernel/arm/SweetPlatformExpert.cpp",
+    "iokit/KernelConfigTables.cpp",
+    "iokit/conf/files.arm64",
+    "makedefs/MakeInc.def",
+    "osfmk/arm/arm_init.c",
+    "osfmk/arm/pmap/pmap.c",
+    "osfmk/arm64/arm_vm_init.c",
+    "osfmk/arm64/cpu.c",
+    "osfmk/arm64/machine_routines.c",
+    "osfmk/arm64/sleh.c",
+    "osfmk/arm64/start.s",
+    "osfmk/arm64/sweet_early.c",
+    "pexpert/arm/pe_fiq.c",
+    "pexpert/arm/pe_identify_machine.c",
+    "pexpert/arm/pe_init.c",
+    "pexpert/arm/pe_kprintf.c",
+    "pexpert/arm/pe_serial.c",
+    "pexpert/pexpert/arm64/SWEET.h",
+    "pexpert/pexpert/arm64/board_config.h",
+    "pexpert/pexpert/arm64/boot.h"
+  ],
+  "source_map": [
+    {
+      "id":"primary-entry","domain":"arm64-entry","source_path":"osfmk/arm64/start.s","symbols":["_start","start_first_cpu","common_start"],"inspection":"direct-patched-source",
+      "sweet_behavior":"_start branches to start_first_cpu; boot_args arrive in x0; assembly derives stacks and bootstrap page tables from virtBase, physBase, and memSize before enabling MMU/caches.",
+      "walleye_requirement":"Retain generic entry only after a separately specified firmware handoff proves EL1-compatible register, cache, MMU, boot_args, and mapped-image preconditions; remove SWEET framebuffer writes.",
+      "evidence":["xnu:osfmk/arm64/start.s","ios-sweet patches 0004, 0010, 0012","Phase 2A Mach-O entry __start"],
+      "dependencies":["validated boot_args contract","initial EL/cache/MMU state","safe physical placement"],"missing":["firmware entry contract","initial exception level","bootloader register state"],
+      "validation":"Assembly/static checks: no WALLEYE hardcoded framebuffer access; generated BA_* offsets match boot_args; entry contract fixture rejects unknown states."
+    },
+    {
+      "id":"boot-args-abi","domain":"arm64-entry","source_path":"pexpert/pexpert/arm64/boot.h","symbols":["boot_args"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Consumes revision/version, virtBase, physBase, memSize, topOfKernelData, video, deviceTreeP/length, command line, flags, and memSizeActual.",
+      "walleye_requirement":"Define an offline-validated producer contract without implementing a shim; every pointer/range must be bounded and reservation-aware.",
+      "evidence":["xnu:pexpert/pexpert/arm64/boot.h","Phase 2B descriptor"],"dependencies":["memory ownership","ADT format"],"missing":["producer ABI","safe loader destination","device-tree physical placement"],
+      "validation":"Host fixtures validate field widths, overflow, containment, alignment, and non-overlap; no address is selected by the plan."
+    },
+    {
+      "id":"arm-init-order","domain":"arm64-entry","source_path":"osfmk/arm/arm_init.c","symbols":["arm_init","arm_slide_rebase_and_sign_image","ml_parse_cpu_topology","arm_vm_init","serial_init","machine_startup"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Copies boot_args, initializes early Platform Expert and topology, constructs VM, starts diagnostics, performs late platform/interrupt/timebase initialization, then enters machine_startup.",
+      "walleye_requirement":"Preserve ordering while inserting fail-closed validation before topology, VM ownership, interrupts, or diagnostics consume unverified properties.",
+      "evidence":["xnu:osfmk/arm/arm_init.c","ios-sweet patches 0010 and 0012"],"dependencies":["validated ADT","validated boot_args"],"missing":["which validations can execute safely before final VM"],
+      "validation":"Source-order test asserts validation hooks precede consumers; host model tests each precondition."
+    },
+    {
+      "id":"platform-early","domain":"platform-expert","source_path":"pexpert/arm/pe_init.c","symbols":["PE_init_platform","PE_slide_devicetree"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Initializes SecureDT from boot_args and calls pe_identify_machine before VM; late call initializes interrupts/debug.",
+      "walleye_requirement":"Consume a documented Apple-style tree whose identity, ranges, CPU nodes, GIC properties, and chosen data were validated offline.",
+      "evidence":["xnu:pexpert/arm/pe_init.c"],"dependencies":["ADT translation contract"],"missing":["FDT-to-ADT mapping","boot-time equivalence"],
+      "validation":"Schema/golden-tree validation; malformed/missing property fixtures must fail before MMIO mapping."
+    },
+    {
+      "id":"platform-match","domain":"platform-expert","source_path":"iokit/KernelConfigTables.cpp","symbols":["gIOKernelConfigTables"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Matches SweetPlatformExpert on xiaomi,sweet and SweetCPU on qcom,kryo470.",
+      "walleye_requirement":"Add distinct WalleyePlatformExpert/WalleyeCPU matches; do not broaden or reuse SWEET identities.",
+      "evidence":["ios-sweet patch 0016","ios-sweet patch 0018"],"dependencies":["verified walleye ADT identity strings"],"missing":["final ADT compatible/name contract"],
+      "validation":"Text/config test proves SWEET strings are absent from WALLEYE match entries and exact new identities are schema-owned."
+    },
+    {
+      "id":"platform-nubs","domain":"platform-expert","source_path":"iokit/Kernel/arm/SweetPlatformExpert.cpp","symbols":["SweetPlatformExpert::start","SweetPlatformExpert::processTopLevel","SweetPlatformExpert::getTargetName","SweetPlatformExpert::getProductName"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Bypasses Apple NVRAM assumption, publishes CPU and top-level DT nubs, and returns SWEET product identity.",
+      "walleye_requirement":"Replace with WalleyePlatformExpert using the reusable IODTPlatformExpert nub flow but walleye identity and an allowlist/exclusion policy tied to validated nodes.",
+      "evidence":["ios-sweet patch 0016","xnu:iokit/Kernel/IOPlatformExpert.cpp"],"dependencies":["ADT schema","safe-node policy"],"missing":["which runtime nodes are safe to publish"],
+      "validation":"Host registry model tests allowlist/exclusion and rejects unknown MMIO-bearing nodes."
+    },
+    {
+      "id":"cpu-enumeration","domain":"cpu-smp","source_path":"osfmk/arm64/machine_routines.c","symbols":["ml_parse_cpu_topology"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Enumerates /cpus, reads reg as physical ID, derives clusters, and SWEET clamps cpus to eight with opt-in default one.",
+      "walleye_requirement":"Reuse generic parser only after a verified mapping from FDT CPU reg/MPIDR and cluster properties; keep default boot-CPU-only until SMP evidence exists.",
+      "evidence":["xnu:osfmk/arm64/machine_routines.c","ios-sweet patches 0065 and 0078","Phase 2B CPU unknowns"],"dependencies":["MPIDR inventory","boot CPU identity","cluster/cache topology"],"missing":["all exact topology values"],
+      "validation":"Synthetic topology fixtures reject duplicates, gaps, absent boot CPU, invalid clusters, and count mismatch."
+    },
+    {
+      "id":"cpu-driver","domain":"cpu-smp","source_path":"iokit/Kernel/arm/SweetCPU.cpp","symbols":["SweetCPU::start","SweetCPU::startAll","SweetCPU::initCPU","SweetCPU::startCPU","sweet_psci_cpu_on"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Assumes Kryo 470 MPIDRs, boot MPIDR zero, PSCI SMC64 CPU_ON, SGI1, and a homogeneous eight-core view.",
+      "walleye_requirement":"Replace rather than rename; WalleyeCPU must consume resolved topology and an abstracted, validated firmware CPU_ON service. No secondary startup until conduit/version is known.",
+      "evidence":["ios-sweet patches 0018, 0065, 0078"],"dependencies":["PSCI/conduit","secondary reset state","coherency","GIC per-CPU init"],"missing":["PSCI support","entry EL","cache/coherency contract"],
+      "validation":"Compile-only interface tests plus mocked firmware return-code/state-machine tests; boot-CPU-only mode must contain no SMC."
+    },
+    {
+      "id":"secondary-entry","domain":"cpu-smp","source_path":"osfmk/arm64/start.s","symbols":["sweet_secondary_entry","LowResetVectorBase","reset_vector","start_cpu"],"inspection":"direct-patched-source",
+      "sweet_behavior":"PSCI entry assumes x0 context, MMU/caches off, performs EL2 setup, then enters LowResetVectorBase.",
+      "walleye_requirement":"Do not reuse until firmware entry EL and reset state are proven; create a separate WALLEYE path only from a written contract.",
+      "evidence":["ios-sweet patch 0065","xnu:osfmk/arm64/start.s"],"dependencies":["firmware contract"],"missing":["initial EL","SCTLR/HCR state","cache/coherency state"],
+      "validation":"Static instruction/register-state contract test against explicit fixtures; unresolved contract disables build-time SMP feature."
+    },
+    {
+      "id":"gic-init","domain":"interrupts-timers","source_path":"pexpert/arm/pe_fiq.c","symbols":["pe_init_fiq","find_gicr_pe_base"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Maps DT /arm-io/gic regions, scans redistributors by MPIDR, programs Group 1 NS, SGI1 and timer PPI, and enables ICC system registers.",
+      "walleye_requirement":"Reuse DT mapping and redistributor scan with configuration changes; isolate security/group programming behind a policy that refuses unknown ownership.",
+      "evidence":["xnu:pexpert/arm/pe_fiq.c","ios-sweet patches 0004 and 0017","Phase 2B GIC descriptor"],"dependencies":["GIC region sizes","MPIDRs","security ownership","ICC_SRE availability"],"missing":["GICD/GICR sizes","security state","firmware initialization"],
+      "validation":"Mock-MMIO model validates bounds, stride, affinity matching, timeout paths and no writes while policy is unknown."
+    },
+    {
+      "id":"irq-dispatch","domain":"interrupts-timers","source_path":"osfmk/arm64/sleh.c","symbols":["sleh_irq","sleh_fiq"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Reads ICC_IAR1_EL1, dispatches timer INTID, SGIs and other IRQs, and writes ICC_EOIR1_EL1 under the SWEET Group 1 assumption.",
+      "walleye_requirement":"Parameterize IRQ-versus-FIQ/group path only after security/routing evidence; retain timer/IPI separation and bounded spurious handling.",
+      "evidence":["ios-sweet patch 0004","ios-sweet patch 0017"],"dependencies":["GIC policy","timer route","SGI selection"],"missing":["interrupt group delivery path"],
+      "validation":"Pure dispatch tests cover spurious 1020..1023, timer, SGI, device IRQ, EOI order and unknown-policy rejection."
+    },
+    {
+      "id":"timer-core","domain":"interrupts-timers","source_path":"osfmk/arm64/cpu.c","symbols":["cpu_timebase_init"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Initializes per-CPU XNU timebase state after platform interrupt setup; virtual timer operations are supplied by ARM64 machine routines.",
+      "walleye_requirement":"Directly reuse architecture-generic bookkeeping once CNTFRQ, CNTV access, INTID 19 routing and interrupt delivery are validated.",
+      "evidence":["xnu:osfmk/arm64/cpu.c","Phase 2B timer descriptor"],"dependencies":["counter frequency","GIC timer routing"],"missing":["CNTFRQ and routing state"],
+      "validation":"Host arithmetic/deadline tests and compile-only ARM register wrapper tests; hardware enable remains gated."
+    },
+    {
+      "id":"platform-interrupt-order","domain":"interrupts-timers","source_path":"pexpert/arm/pe_identify_machine.c","symbols":["PE_init_cpu","pe_arm_init_interrupts","pe_arm_map_interrupt_controller","pe_arm_init_timer"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Late PE_init_platform maps interrupt/timer nodes; PE_init_cpu calls pe_init_fiq; generic timebase ops are installed.",
+      "walleye_requirement":"Preserve call ordering but replace assumed Apple DT node shapes with the validated walleye ADT schema.",
+      "evidence":["xnu:pexpert/arm/pe_identify_machine.c","xnu:osfmk/arm/arm_init.c"],"dependencies":["ADT schema","GIC policy"],"missing":["safe mapping point for validated absolute MSM8998 addresses"],
+      "validation":"Source-order and golden-tree tests; invalid region sizes fail before ml_io_map."
+    },
+    {
+      "id":"vm-bootstrap","domain":"memory","source_path":"osfmk/arm64/arm_vm_init.c","symbols":["arm_vm_init","arm_vm_physmap_init"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Uses boot_args physBase/memSize/topOfKernelData for managed RAM, physmap, avail_start and page tables; SWEET adds a framebuffer mapping and large-memory padding.",
+      "walleye_requirement":"Remove SWEET framebuffer mapping; accept only a reservation-reconciled managed-memory contract. Do not use the runtime FDT declaration as a loader-safe range.",
+      "evidence":["xnu:osfmk/arm64/arm_vm_init.c","ios-sweet patches 0011 and 0012","Phase 2B memory descriptor"],"dependencies":["all static/dynamic reservations","kernel physical placement","topOfKernelData ownership"],"missing":["15 static ranges","five dynamic placements","safe loader map"],
+      "validation":"Host range-set model proves managed pages exclude kernel, ADT, boot_args and every resolved reservation; overflow/overlap tests."
+    },
+    {
+      "id":"pmap-bootstrap","domain":"memory","source_path":"osfmk/arm/pmap/pmap.c","symbols":["pmap_bootstrap"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Initializes the XNU physical map from the dynamic-memory boundary computed by arm_vm_init.",
+      "walleye_requirement":"Directly reuse only after arm_vm_init receives a correct managed range; no MSM8998 addresses belong here.",
+      "evidence":["xnu:osfmk/arm/pmap/pmap.c","xnu:osfmk/arm64/arm_vm_init.c"],"dependencies":["validated memory contract"],"missing":["complete reservation map"],
+      "validation":"Range-model tests plus compile-only call-boundary assertion."
+    },
+    {
+      "id":"reserved-memory-gap","domain":"memory","source_path":null,"symbols":[],"inspection":"unresolved-mapping",
+      "sweet_behavior":"No directly inspected SWEET/XNU platform path was found that imports Linux /reserved-memory children into arm_vm_init's managed ranges.",
+      "walleye_requirement":"Define a host-validated translation into boot_args/ADT ownership before VM initialization; fail if any dynamic placement is unresolved.",
+      "evidence":["direct search of inspected XNU tree","Phase 2B reserved-memory summary"],"dependencies":["original reservation records"],"missing":["all reservation identities/ranges","translation integration point"],
+      "validation":"Negative test: current summary-only descriptor cannot produce a boot memory contract."
+    },
+    {
+      "id":"serial-console","domain":"diagnostics","source_path":"pexpert/arm/pe_serial.c","symbols":["serial_init","register_serial_functions"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Probes sweet-fbcon and platform serial providers; SWEET early path also uses framebuffer 0x9c000000.",
+      "walleye_requirement":"Remove all SWEET framebuffer assumptions. Register no provider until UART type/base/clock are evidenced; failure must return no console without touching MMIO.",
+      "evidence":["ios-sweet patches 0003, 0010, 0012","Phase 2B diagnostics unknowns"],"dependencies":["UART evidence"],"missing":["UART type/base/clock/readiness"],
+      "validation":"Mock provider tests prove unknown diagnostics perform zero MMIO and return failure cleanly."
+    },
+    {
+      "id":"kprintf-fallback","domain":"diagnostics","source_path":"pexpert/arm/pe_kprintf.c","symbols":["PE_init_kprintf"],"inspection":"direct-baseline-source",
+      "sweet_behavior":"Uses serial when serial_init succeeds, otherwise console_write_unbuffered.",
+      "walleye_requirement":"Reuse fallback structure only when the fallback is proven storage-free and safe; otherwise use a bounded in-memory ring with no MMIO side effects.",
+      "evidence":["xnu:pexpert/arm/pe_kprintf.c"],"dependencies":["safe early-memory allocation","console policy"],"missing":["safe fallback sink before VM"],
+      "validation":"Host ring-buffer bounds/wrap tests and no-provider failure tests."
+    },
+    {
+      "id":"machine-build-config","domain":"build","source_path":"makedefs/MakeInc.def","symbols":["SUPPORTED_ARM64_MACHINE_CONFIGS","MACHINE_FLAGS_ARM64_SWEET"],"inspection":"direct-patched-source",
+      "sweet_behavior":"Adds SWEET and compiles for ARMv8.2-a+crypto plain arm64.",
+      "walleye_requirement":"Add a distinct WALLEYE machine config with ISA flags established from MSM8998/Kryo 280 evidence; never copy ARMv8.2 flags without audit.",
+      "evidence":["ios-sweet patch 0004","Phase 2A compatibility report"],"dependencies":["ISA feature audit"],"missing":["verified compiler architecture baseline"],
+      "validation":"Build-definition lint rejects SWEET identifiers/flags and requires an explicit reviewed ISA setting."
+    }
+  ],
+  "initialization_sequence": [
+    {"order":1,"id":"firmware-contract","name":"Firmware entry contract validation","preconditions":["immutable contract supplied by future handoff producer"],"inputs":["entry EL","x0 boot_args pointer","MMU/cache state","image mapping"],"outputs":["validated entry-state record"],"failure_conditions":["unknown or mismatched EL/state","out-of-range pointer","unsupported mapping"],"firmware_services":[],"offline_invariants":["no address selection","all states explicit","unknown rejects"],"hardware_dependencies":["firmware handoff evidence"]},
+    {"order":2,"id":"cpu-state","name":"Primary CPU execution-state validation","preconditions":["firmware contract valid"],"inputs":["CurrentEL","SCTLR/TCR-relevant state","MPIDR","architectural features"],"outputs":["primary CPU capability record"],"failure_conditions":["unsupported EL","missing required ISA feature","unknown coherency"],"firmware_services":[],"offline_invariants":["feature matrix is allowlisted","SWEET Kryo 470 values forbidden"],"hardware_dependencies":["Kryo 280 feature evidence"]},
+    {"order":3,"id":"memory-contract","name":"Memory and reservation validation","preconditions":["entry state valid","complete reservation inventory"],"inputs":["boot_args ranges","kernel/ADT placement","static and dynamic reservations"],"outputs":["non-overlapping managed-memory set","topOfKernelData bound"],"failure_conditions":["overflow","overlap","unplaced dynamic reservation","unsafe gap"],"firmware_services":[],"offline_invariants":["all ranges u64/aligned/non-overlapping","runtime declaration is not loader-safe"],"hardware_dependencies":["complete boot-time ownership map"]},
+    {"order":4,"id":"early-diagnostics","name":"Early diagnostics selection","preconditions":["memory contract valid"],"inputs":["validated UART descriptor or bounded memory ring"],"outputs":["diagnostic sink or explicit no-sink state"],"failure_conditions":["unknown MMIO provider selected","unbounded logging"],"firmware_services":[],"offline_invariants":["unknown UART causes zero MMIO","no SWEET framebuffer address"],"hardware_dependencies":["UART evidence for MMIO output"]},
+    {"order":5,"id":"platform-expert","name":"Platform Expert initialization","preconditions":["boot_args and ADT validated"],"inputs":["walleye ADT","node allowlist"],"outputs":["WalleyePlatformExpert and safe nubs"],"failure_conditions":["identity mismatch","unknown MMIO node","missing chosen/cpus/GIC data"],"firmware_services":[],"offline_invariants":["xiaomi,sweet and qcom,kryo470 never match","only allowlisted nodes publish"],"hardware_dependencies":["FDT-to-ADT contract"]},
+    {"order":6,"id":"gic","name":"GICv3 setup","preconditions":["platform and MMIO ranges valid","security policy resolved"],"inputs":["GICD/GICR ranges","stride","MPIDR","group policy"],"outputs":["awake local redistributor","configured CPU interface"],"failure_conditions":["unknown security ownership","affinity not found","wake timeout","unsupported ICC interface"],"firmware_services":["firmware-provided GIC ownership/state contract"],"offline_invariants":["no write with unknown policy","bounded redistributor scan"],"hardware_dependencies":["region sizes","GIC security state"]},
+    {"order":7,"id":"timer","name":"Architectural timer setup","preconditions":["GIC local interface ready","counter contract resolved"],"inputs":["INTID 19","counter frequency","routing/group"],"outputs":["per-CPU virtual timer state"],"failure_conditions":["INTID outside PPI range","unknown frequency/routing","timer not delivered"],"firmware_services":["counter access configured by firmware"],"offline_invariants":["INTID is 16..31","frequency nonzero and bounded"],"hardware_dependencies":["CNTFRQ and routing evidence"]},
+    {"order":8,"id":"primary-cpu","name":"Primary CPU initialization","preconditions":["topology contains verified boot CPU","GIC/timer ready"],"inputs":["boot MPIDR","logical mapping","cache topology"],"outputs":["registered running primary processor"],"failure_conditions":["boot CPU mismatch","duplicate MPIDR","unsupported cache topology"],"firmware_services":[],"offline_invariants":["one boot CPU","contiguous logical IDs"],"hardware_dependencies":["resolved CPU topology"]},
+    {"order":9,"id":"secondary-cpus","name":"Secondary CPU bring-up","preconditions":["primary stable","PSCI/conduit and secondary entry contract resolved"],"inputs":["secondary MPIDRs","physical entry","context IDs"],"outputs":["individually validated online CPUs"],"failure_conditions":["firmware error","timeout","coherency failure","SGI failure"],"firmware_services":["validated PSCI CPU_ON or evidenced replacement"],"offline_invariants":["feature disabled while firmware contract unknown","no hardcoded MPIDR pattern"],"hardware_dependencies":["PSCI","reset EL/state","coherency","per-CPU GIC"]}
+  ],
+  "compatibility": [
+    {"component":"Mach-O parser and provenance tooling","category":"directly-reusable","reason":"Host-only bounded tooling has no SWEET hardware dependency."},
+    {"component":"XNU generic arm64 _start/start_first_cpu structure","category":"reusable-with-source-modifications","reason":"Core flow is generic; SWEET framebuffer code must be removed and firmware preconditions remain blocked."},
+    {"component":"boot_args structure","category":"reusable-with-configuration-changes","reason":"ABI can be reused only with a validated producer/range contract."},
+    {"component":"SweetPlatformExpert and xiaomi,sweet match","category":"sweet-specific-replace","reason":"Identity and node policy target Redmi Note 10 Pro."},
+    {"component":"IODTPlatformExpert nub publication","category":"reusable-with-source-modifications","reason":"Mechanism is reusable with a walleye allowlist and no Apple NVRAM assumption."},
+    {"component":"SWEET/Kryo 470 CPU driver and topology","category":"sweet-specific-replace","reason":"MPIDR layout, CPU model, homogeneity, boot CPU and PSCI assumptions are unverified for walleye."},
+    {"component":"Generic ml_parse_cpu_topology flow","category":"reusable-with-configuration-changes","reason":"Can consume verified ADT CPU records after topology evidence exists."},
+    {"component":"GICv3 DT mapping and redistributor scan","category":"reusable-with-source-modifications","reason":"Addresses/stride align, but sizes, affinity and security policy must be parameterized."},
+    {"component":"SWEET Group 1 IRQ dispatch","category":"blocked-missing-evidence","reason":"Walleye GIC security ownership and delivery path are unknown."},
+    {"component":"ARM virtual timer bookkeeping","category":"directly-reusable","reason":"Architecture-generic after external frequency/routing preconditions are satisfied."},
+    {"component":"SWEET framebuffer diagnostics","category":"sweet-specific-replace","reason":"Hardcoded 0x9c000000 and geometry have no walleye evidence."},
+    {"component":"UART diagnostics","category":"blocked-missing-evidence","reason":"Type, base, clock and readiness are unknown."},
+    {"component":"arm_vm_init/pmap core","category":"reusable-with-source-modifications","reason":"Core is reusable, but managed ranges must incorporate complete reservations and remove SWEET mappings."},
+    {"component":"SWEET PSCI SMC secondary path","category":"blocked-missing-evidence","reason":"PSCI version/conduit, entry EL and coherency contract are unknown."}
+  ],
+  "roadmap": [
+    {"id":"M1","objective":"Add compile-only WALLEYE machine identity and board configuration skeleton with every hardware-dependent feature disabled.","components":["makedefs/MakeInc.def","pexpert/pexpert/arm64/WALLEYE.h","pexpert/pexpert/arm64/board_config.h","config/MASTER.arm64.walleye"],"dependencies":["ISA feature audit"],"offline_tests":["definition lint","preprocessor assertions","no SWEET identifier/address scan"],"acceptance":["WALLEYE is distinct","no framebuffer/UART/PSCI/GIC write enabled","unknown ISA flags cannot pass review"],"blockers":["verified MSM8998 compiler ISA baseline"],"complexity":"low"},
+    {"id":"M2","objective":"Define and validate the walleye Apple-style DT/boot_args handoff schema without implementing a loader.","components":["config/walleye-adt-schema.json","tools/validate_walleye_handoff.py","pexpert/pexpert/arm64/boot.h"],"dependencies":["complete reservation evidence","boot_args producer contract"],"offline_tests":["golden and adversarial trees","range/overflow/ownership tests"],"acceptance":["summary-only reservations cannot produce handoff","all pointers/ranges bounded","no loader address selected"],"blockers":["15 static ranges","five dynamic placements"],"complexity":"medium"},
+    {"id":"M3","objective":"Implement compile-only WalleyePlatformExpert matching and safe nub publication.","components":["iokit/Kernel/arm/WalleyePlatformExpert.cpp","iokit/KernelConfigTables.cpp","iokit/conf/files.arm64"],"dependencies":["M1","M2","verified ADT identities"],"offline_tests":["registry model","match-table scan","allowlist tests"],"acceptance":["no SWEET match reuse","unknown MMIO nodes not published","target/product strings are walleye-specific"],"blockers":["final ADT compatible/name contract"],"complexity":"medium"},
+    {"id":"M4","objective":"Refactor GICv3 and virtual-timer policy into platform data with a no-write unknown state.","components":["pexpert/arm/pe_fiq.c","osfmk/arm64/sleh.c","pexpert/pexpert/arm/protos.h"],"dependencies":["M2","GIC region sizes","security ownership","counter/routing evidence"],"offline_tests":["mock MMIO","redistributor affinity/timeout tests","IRQ dispatch tests"],"acceptance":["known bases/stride parse","unknown security performs zero writes","INTID 19 validated as PPI"],"blockers":["GIC security and ICC interface state"],"complexity":"high"},
+    {"id":"M5","objective":"Support validated boot-CPU-only topology and memory initialization boundaries.","components":["osfmk/arm64/machine_routines.c","osfmk/arm64/arm_vm_init.c","osfmk/arm/pmap/pmap.c"],"dependencies":["M2","resolved boot MPIDR","complete memory ownership"],"offline_tests":["topology fixtures","managed-range model","source-order assertions"],"acceptance":["one verified boot CPU","no secondary firmware call","no reserved page becomes managed"],"blockers":["boot MPIDR","reservation placements","topOfKernelData contract"],"complexity":"high"},
+    {"id":"M6","objective":"Add fail-safe bounded in-memory diagnostics; add UART only if evidence later resolves it.","components":["pexpert/arm/pe_serial.c","pexpert/arm/pe_kprintf.c","osfmk/console/serial_console.c"],"dependencies":["M5"],"offline_tests":["ring bounds/wrap tests","zero-MMIO unknown-provider test"],"acceptance":["no SWEET framebuffer address","logging failure cannot touch unknown MMIO","buffer is bounded"],"blockers":["UART evidence for hardware output"],"complexity":"medium"},
+    {"id":"M7","objective":"Implement WalleyeCPU secondary bring-up only after firmware and coherency contracts are evidenced.","components":["iokit/Kernel/arm/WalleyeCPU.cpp","osfmk/arm64/start.s","osfmk/arm64/cpu.c"],"dependencies":["M4","M5","PSCI/conduit contract","secondary entry contract"],"offline_tests":["mock firmware state machine","return-code/timeouts","static EL/register contract"],"acceptance":["no hardcoded MPIDR pattern","per-CPU GIC/timer initialization gated","firmware failures fail closed"],"blockers":["PSCI","entry EL","cache/coherency","power management"],"complexity":"very-high"}
+  ],
+  "highest_priority_next_task": "M1: create a compile-only WALLEYE machine-configuration skeleton with all unresolved hardware services disabled, after documenting the MSM8998 ISA compiler baseline.",
+  "unresolved": [
+    "exact CPU MPIDRs, clusters, boot CPU and cache topology",
+    "initial exception level and bootloader register/MMU/cache state",
+    "PSCI version, conduit, CPU_ON support and secure-monitor contract",
+    "GIC region sizes, security ownership and ICC system-register availability",
+    "architectural counter frequency and timer routing state",
+    "15 static reserved-memory ranges and five dynamic placements",
+    "safe loader ranges and complete boot-time ownership",
+    "UART type, base, clock and firmware readiness",
+    "FDT-to-ADT and Apple boot_args producer contracts"
+  ]
+}
