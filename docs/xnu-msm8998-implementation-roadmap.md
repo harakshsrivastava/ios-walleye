@@ -18,11 +18,12 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 
 ## M2 — Boot-argument and ADT contract
 
+- Status: completed as a strict offline contract and validator on `feature/walleye-boot-contract`; handoff production remains blocked.
 - Objective: define a host-validated walleye Apple-style tree and boot-argument schema; do not implement a loader.
-- Components: proposed `config/walleye-adt-schema.json`, proposed `tools/validate_walleye_handoff.py`, existing `pexpert/pexpert/arm64/boot.h` ABI mapping.
+- Components: `config/walleye-boot-contract.json`, `tools/validate_walleye_boot_contract.py`, direct mapping to `pexpert/pexpert/arm64/boot.h`, and documented FDT/ADT boundary.
 - Dependencies: complete reservation evidence and producer contract.
-- Offline tests: golden/adversarial trees, pointer/range/overflow/ownership checks.
-- Acceptance: summary-only reservations cannot produce a handoff; all ranges bounded; no load address selected.
+- Offline tests: schema/version/identity, pointer/range/overflow/overlap/containment, provenance, firmware-state, initialization-order and SWEET-leak checks.
+- Acceptance: satisfied for offline validation—summary-only reservations cannot produce a handoff, known ranges are bounded, and no load address is selected.
 - Blockers: 15 static ranges and five dynamic placements.
 - Complexity: medium.
 
@@ -79,11 +80,11 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 ## Stop/go rules
 
 - M1 is complete at the compile-only boundary; it does not authorize hardware initialization.
-- M2 may implement only schema/validation while reservation evidence is missing; it must reject production of a handoff contract.
+- M2's schema/validator portion is complete; production of a handoff remains rejected while reservation and producer evidence is missing.
 - M3 can compile against fixtures but must not claim runtime node safety before M2 resolves.
 - M4–M5 remain non-activating until their named evidence gates close.
 - M7 must not be started by copying SWEET's `smc #0` path.
 
-The next milestone is M2's schema/validator portion. Its handoff-production path remains blocked until complete reservation and producer evidence exists.
+The next implementation milestone is M3's compile-only Platform Expert boundary. Final matching and node publication remain blocked until the ADT identity/schema and safe-node policy resolve.
 
 Machine-readable milestone fields, dependencies and acceptance criteria are in `config/xnu-msm8998-port-plan.json` and are enforced by `tools/validate_xnu_msm8998_plan.py`.

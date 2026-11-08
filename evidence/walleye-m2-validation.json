@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "milestone": "M2",
+  "recovery_checkpoint_commit": "b75f1d71ba47bfb8b905b3d630a14c7ac5f779fb",
+  "source_baseline": {
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "m1_commit": "e81ba5a310410e38a5dd57635b20ac897da76881"
+  },
+  "full_sweet_patch_stack": {
+    "status": "passed_with_sdk_staging_limitation",
+    "patches_applied": 81,
+    "patch_order": "lexical filename order matching ios-sweet workflow",
+    "staged_dependencies": [
+      {
+        "name": "libpthread",
+        "commit": "a6c70ca0e544347a0377babf748f831577ec24f9",
+        "source_staged": true,
+        "sdk_targetconditionals_staged": false,
+        "limitation": "xcrun unavailable after source copy"
+      },
+      {
+        "name": "BearSSL",
+        "commit": "7bea48e5e850ab4cafbe68d3765cdaba13a86d6f",
+        "source_staged": true,
+        "sdk_targetconditionals_staged": "not-required"
+      },
+      {
+        "name": "HFS",
+        "commit": "31d5ec238dfab485e78a9a30b8b92d13e8914f03",
+        "source_staged": true,
+        "sdk_targetconditionals_staged": false,
+        "limitation": "xcrun unavailable after source copy"
+      }
+    ],
+    "sdk_limitation_effect": "TargetConditionals.h is needed for Apple-SDK compilation but is not an input to git patch applicability.",
+    "m1_patch": {
+      "path": "patches/xnu/0001-walleye-build-skeleton.patch",
+      "sha256": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea",
+      "applies_after_81": true,
+      "conflicts": []
+    }
+  },
+  "arm64_macho_compile": {
+    "status": "passed",
+    "compiler": "Debian clang version 19.1.7 (3+b1)",
+    "package": "clang-19 1:19.1.7-3+b1 amd64",
+    "package_source": "Debian trixie snapshot 20261103T013555Z",
+    "installation": "user-local extraction under /workspace/toolchains/llvm19; no system or MacBook modification",
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": ["-march=armv8-a", "-mno-outline-atomics"],
+    "command": "LD_LIBRARY_PATH=/workspace/toolchains/llvm19/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu SOURCE_DATE_EPOCH=0 /workspace/toolchains/llvm19/usr/bin/clang-19 --target=arm64-apple-darwin22 -march=armv8-a -mno-outline-atomics -std=c11 -Wall -Wextra -Werror -ffreestanding -fno-builtin -fno-stack-protector -nostdinc -I overlays/walleye/pexpert -c overlays/walleye/compile_probe.c -o walleye-config-probe.arm64.o",
+    "runs": 2,
+    "byte_identical": true,
+    "object": {
+      "committed": false,
+      "size_bytes": 392,
+      "sha256": "c9e26b60b2a8e31582de3243cd3c4194998d1cd9066e9329494aa266569fbb21",
+      "format": "Mach-O 64-bit",
+      "architecture": "arm64",
+      "filetype": "MH_OBJECT",
+      "cpu_subtype": 0,
+      "load_commands": 4,
+      "symbols": ["ltmp0", "_walleye_m1_compile_probe"],
+      "relocations": 0
+    },
+    "linked": false,
+    "kernel_built": false
+  },
+  "contract_validation": {
+    "status": "valid_with_unresolved",
+    "errors": [],
+    "unresolved_count": 38,
+    "boot_ready": false,
+    "inputs": {
+      "config/walleye-boot-contract.json": "9e04bbcb15a4f878eb0325d96c3f9673d96217aebed4bc94a6e024f08c1458ce",
+      "tools/validate_walleye_boot_contract.py": "c0c87d416462252a87369b9a2f770686d0a2993ae566f807900dedda1bd12af6",
+      "tests/test_validate_walleye_boot_contract.py": "42fc57a3a8705094ee038313a8e29ed8048dae583fc865070bba4f25c9cde331"
+    }
+  },
+  "regression_suite": {
+    "framework": "python3 -m unittest discover -s tests -v",
+    "tests_run": 56,
+    "failures": 0,
+    "errors": 0,
+    "result": "passed"
+  },
+  "claims": {
+    "loader_implemented": false,
+    "boot_image_generated": false,
+    "kernel_linked": false,
+    "kernel_built": false,
+    "device_accessed": false,
+    "boot_ready": false
+  }
+}

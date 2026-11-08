@@ -182,3 +182,17 @@ A direct search of the inspected tree found no SWEET/XNU path that imports Linux
 - UFS initialization is outside the minimum entry/platform/interrupt architecture and remains blocked by clocks, resets, PHY and firmware link state from Phase 2B.
 
 The machine-readable equivalent, including per-entry dependencies and validation, is `config/xnu-msm8998-port-plan.json`.
+
+## Phase 3 M2 boot-contract inspection
+
+M2 directly rechecked the complete SWEET-patched tree at the pinned XNU commit and mapped the offline contract to these additional interfaces:
+
+| Path | Symbol or structure | M2 finding |
+| --- | --- | --- |
+| `pexpert/pexpert/arm64/boot.h` | `boot_args`, `Boot_Video` | Exact ARM64 producer ABI and all pointer/range fields |
+| `osfmk/arm64/genassym.c` | `BA_VIRT_BASE`, `BA_PHYS_BASE`, `BA_MEM_SIZE`, `BA_TOP_OF_KERNEL_DATA`, `BA_BOOT_FLAGS` | Assembly offsets derive from the C layout |
+| `pexpert/pexpert/device_tree.h` | `DeviceTreeNode`, `DeviceTreeNodeProperty`, `DTMemoryMapRange` | Apple flattened-tree records are not Linux FDT records |
+| `pexpert/gen/device_tree.c` | `SecureDTInit`, `SecureDTGetProperty`, iterators | Region bounds and four-byte property padding are enforced while walking ADT records |
+| `iokit/Kernel/IODeviceTreeSupport.cpp` | `IODTGetLoaderInfo`, registry construction | `/chosen/memory-map` properties become loader information and registry content |
+
+These mappings are direct source observations. The JSON contract's required revision/version 2 is an M2 producer policy for the complete declared structure; the inspected early consumers do not independently authenticate the revision fields. Firmware register state, physical placement, memory ownership and the transformation producer remain unresolved.
