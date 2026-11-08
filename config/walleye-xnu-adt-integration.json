@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "milestone": "M3D",
+  "source_baseline": {
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "sweet_patch_count": 81
+  },
+  "patch_sequence": [
+    "patches/xnu/0001-walleye-build-skeleton.patch",
+    "patches/xnu/0002-walleye-platform-expert.patch",
+    "patches/xnu/0003-walleye-native-adt-policy.patch"
+  ],
+  "xnu_staging": {
+    "header": "iokit/Kernel/arm/WalleyeADTPolicy.h",
+    "source": "iokit/Kernel/arm/WalleyeADTPolicy.c",
+    "source_list": "iokit/conf/files.arm64",
+    "source_list_entry": "iokit/Kernel/arm/WalleyeADTPolicy.c                              optional iokitcpp",
+    "build_guard": "ARM64_BOARD_CONFIG_WALLEYE"
+  },
+  "m3c_equivalence": {
+    "public_function": "walleye_validate_normalized_adt",
+    "header_source": "include/walleye_adt_policy.h",
+    "implementation_source": "src/walleye_adt_policy.c",
+    "semantic_changes": ["colocated header include spelling", "WALLEYE build guard only"]
+  },
+  "runtime": {
+    "call_sites": 0,
+    "platform_expert_modified": false,
+    "iokit_node_publication": "none",
+    "native_adt_parser": false,
+    "hardware_initialization": false,
+    "boot_ready": false
+  },
+  "m2_boundary": {
+    "status": "valid_with_unresolved",
+    "unresolved_count": 38
+  }
+}
