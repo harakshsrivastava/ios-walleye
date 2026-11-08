@@ -36,7 +36,10 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 - M3B status: completed as a host-side, default-deny identity and safe-node policy on `feature/walleye-adt-validation`; final ADT identity remains unresolved.
 - M3B components: `config/walleye-adt-policy.json`, `tools/validate_walleye_adt.py`, and bounded positive/adversarial fixtures under `fixtures/adt/`.
 - M3B outcome: only structural `/` and optional `/chosen` fixtures are accepted; identity-bearing properties, hardware nodes, runtime matching, startup, and publication remain rejected.
-- M3C objective: compile a pure policy helper over a normalized bounded representation, without wiring it into Platform Expert matching or startup.
+- M3C status: completed as a standalone pure C11 policy helper on `feature/walleye-native-adt-policy`.
+- M3C components: `include/walleye_adt_policy.h`, `src/walleye_adt_policy.c`, reproducible ARM64 Mach-O builds, host/sanitizer harness, and differential Python/native tests.
+- M3C outcome: bounded caller-owned spans and stable results enforce the M3B structural policy; no parser, XNU link, runtime call site, or hardware path exists.
+- M3D objective: stage the unchanged helper into an isolated WALLEYE XNU patch and build source list without calling it from Platform Expert.
 - Dependencies: M1, M2, a validated ADT producer/identity, and base-start property requirements.
 - Offline tests: registry model, exact match-table scan, node allowlist/exclusion fixtures, and unknown-MMIO rejection.
 - Acceptance: no SWEET match reuse; unknown MMIO nodes remain unpublished; final identity has evidence; runtime startup remains disabled until every gate is satisfied.
@@ -87,10 +90,10 @@ Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/w
 
 - M1 is complete at the compile-only boundary; it does not authorize hardware initialization.
 - M2's schema/validator portion is complete; production of a handoff remains rejected while reservation and producer evidence is missing.
-- M3A remains compile-only and fail-closed. M3B validates synthetic registry fixtures only. M3C must remain uncalled by runtime startup until native ADT identity and producer gates resolve.
+- M3A remains compile-only and fail-closed. M3B validates synthetic registry fixtures only. M3C is compiled but uncalled. M3D may stage source only; runtime invocation remains blocked until native ADT identity and producer gates resolve.
 - M4–M5 remain non-activating until their named evidence gates close.
 - M7 must not be started by copying SWEET's `smc #0` path.
 
-The next source-level milestone is an uncalled, compile-only M3C policy helper over a normalized bounded representation. Final matching, base-class startup, native parsing, and node publication remain blocked.
+The next source-level milestone is M3D: stage the unchanged helper in the pinned XNU source/build list without a runtime call site. Final matching, base-class startup, native parsing, and node publication remain blocked.
 
 Machine-readable milestone fields, dependencies and acceptance criteria are in `config/xnu-msm8998-port-plan.json` and are enforced by `tools/validate_xnu_msm8998_plan.py`.

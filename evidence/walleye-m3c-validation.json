@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "milestone": "M3C",
+  "base_commit": "2f7677fc9b437151831c74b7ad94915ff5f4af96",
+  "checkpoints": {
+    "initial": "b5d45e9316533113375d46944cfa83eebeaf18b3",
+    "native_compilation": "5364019c521731b94ff59f75ef7d151fc6c39b98"
+  },
+  "implementation": {
+    "header": "include/walleye_adt_policy.h",
+    "source": "src/walleye_adt_policy.c",
+    "public_function": "walleye_validate_normalized_adt",
+    "language": "C11",
+    "native_binary_parser": false,
+    "dynamic_allocation": false,
+    "recursion": false,
+    "global_mutable_state": false,
+    "iokit_dependency": false,
+    "hardware_access": false
+  },
+  "compile_validation": {
+    "compiler": "Debian clang version 19.1.7 (3+b1)",
+    "target": "arm64-apple-darwin22",
+    "architecture_flags": [
+      "-march=armv8-a",
+      "-mno-outline-atomics"
+    ],
+    "command": "/workspace/toolchains/llvm19/usr/lib/llvm-19/bin/clang --target=arm64-apple-darwin22 -march=armv8-a -mno-outline-atomics -std=c11 -Wall -Wextra -Werror -pedantic -ffreestanding -fno-builtin -fno-stack-protector -nostdinc -I /workspace/ios-walleye/include -c /workspace/ios-walleye/src/walleye_adt_policy.c -o walleye_adt_policy.o",
+    "runs": 2,
+    "byte_identical": true,
+    "format": "Mach-O 64-bit arm64",
+    "filetype": "MH_OBJECT",
+    "object_size_bytes": 4128,
+    "object_sha256": "3a4c5eabcf96aaa53a234bc44e1a41c4b132e61e2e9c1e02810d83652917a3cb",
+    "validator_symbol": "_walleye_validate_normalized_adt",
+    "external_relocations": 0,
+    "section_relocations": 34,
+    "linked": false,
+    "kernel_built": false
+  },
+  "host_validation": {
+    "compiler": "cc (Debian 14.2.0-19) 14.2.0",
+    "adversarial_cases": 26,
+    "normal_run": "passed",
+    "asan_ubsan_compile": "passed",
+    "asan_ubsan_run": "passed",
+    "asan_options": "detect_leaks=1",
+    "ubsan_options": "halt_on_error=1"
+  },
+  "differential_validation": {
+    "python_reference": "tools/validate_walleye_adt.py",
+    "native_library": "generated host shared library; not committed",
+    "supported_fixture_cases": 13,
+    "mismatches": 0,
+    "metadata_cases_explicitly_not_mapped": 2,
+    "unsupported_input_counted_as_agreement": false
+  },
+  "preserved_guarantees": {
+    "m2_status": "valid_with_unresolved",
+    "m2_unresolved_count": 38,
+    "m3b_policy_unresolved_count": 4,
+    "m3a_runtime_match_enabled": false,
+    "m3a_start_supported": false,
+    "m3a_node_publication": "none",
+    "native_adt_parser": false,
+    "runtime_call_site": null,
+    "hardware_initialization": false,
+    "boot_ready": false
+  },
+  "integration": {
+    "new_xnu_patch": false,
+    "xnu_source_tree_modified": false,
+    "platform_expert_modified": false,
+    "generated_objects_committed": false
+  },
+  "inputs": {
+    "include/walleye_adt_policy.h": "49ca5b2f1b0db54f5d57c743fdca6e5a2440e7226093548896d23cea248ff4a2",
+    "src/walleye_adt_policy.c": "568c27701528828ac1018f6a32c0fd0aece14ea93b3543205504eb4fcf031669",
+    "config/walleye-native-adt-policy.json": "30f83bf728e87d167fd7faf2768ca22c29bececcdb068f99829c24e7128c9858",
+    "config/walleye-adt-policy.json": "2e2884efbf8899c90ba768c76ac6c3177cfa7096d0c9ca72f32de8ccfaa45a9b",
+    "tools/build_walleye_adt_policy.py": "08998190579f2e84a009a1429ade1cfcb30ded524114c5afbcfdf3501869fb09",
+    "tools/validate_walleye_adt.py": "3c928706f4d62c686ec746691bdb552dd1d290bea10e05656d14e6bcc3504e7b",
+    "tests/native/walleye_adt_policy_test.c": "f458333acf8f115e75243f8cdfd49eca3e0cb4e8428734920f647f6861b73c89",
+    "tests/test_walleye_native_adt_policy.py": "93953d743dfca3bfdd17b7bf438bc2f6b1ae2c19350c73248560aef67577c130"
+  },
+  "regression_suite": {
+    "framework": "python3 -m unittest discover -s tests -v",
+    "tests_run": 104,
+    "failures": 0,
+    "errors": 0,
+    "result": "passed"
+  },
+  "claims": {
+    "production_adt_validated": false,
+    "kernel_linked": false,
+    "kernel_built": false,
+    "runtime_integrated": false,
+    "device_accessed": false,
+    "boot_ready": false
+  }
+}

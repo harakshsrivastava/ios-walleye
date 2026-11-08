@@ -205,8 +205,11 @@ def project_consistency(policy: dict[str, Any], root: Path = ROOT) -> tuple[list
         errors.append("M3A firmware calls must remain disabled")
 
     m3 = next((item for item in plan.get("roadmap", []) if item.get("id") == "M3"), {})
-    if m3.get("status") != "m3b-completed-offline-validation":
-        errors.append("port plan no longer records completed offline-only M3B")
+    if m3.get("status") not in (
+        "m3b-completed-offline-validation",
+        "m3c-completed-native-compile-only",
+    ):
+        errors.append("port plan no longer preserves completed offline-only M3B")
     if plan.get("boot_readiness_claimed") is not False:
         errors.append("port plan must not claim boot readiness")
     return errors, unresolved

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "milestone": "M3C",
+  "module": "walleye-native-adt-policy",
+  "language": "C11",
+  "policy_reference": {
+    "path": "config/walleye-adt-policy.json",
+    "sha256": "2e2884efbf8899c90ba768c76ac6c3177cfa7096d0c9ca72f32de8ccfaa45a9b",
+    "policy_version": 1,
+    "policy_level_unresolved_count": 4,
+    "native_binary_adt_parser": false
+  },
+  "sources": [
+    {
+      "path": "include/walleye_adt_policy.h",
+      "sha256": "49ca5b2f1b0db54f5d57c743fdca6e5a2440e7226093548896d23cea248ff4a2"
+    },
+    {
+      "path": "src/walleye_adt_policy.c",
+      "sha256": "568c27701528828ac1018f6a32c0fd0aece14ea93b3543205504eb4fcf031669"
+    },
+    {
+      "path": "tests/native/walleye_adt_policy_test.c",
+      "sha256": "f458333acf8f115e75243f8cdfd49eca3e0cb4e8428734920f647f6861b73c89"
+    },
+    {
+      "path": "tools/build_walleye_adt_policy.py",
+      "sha256": "08998190579f2e84a009a1429ade1cfcb30ded524114c5afbcfdf3501869fb09"
+    }
+  ],
+  "public_interface": {
+    "function": "walleye_validate_normalized_adt",
+    "inputs": [
+      "policy_version",
+      "nodes and explicit node_count",
+      "properties and explicit property_count",
+      "normalized_size_bytes"
+    ],
+    "span_fields": [
+      "data",
+      "length",
+      "capacity"
+    ],
+    "null_termination_required": false
+  },
+  "stable_results": {
+    "WALLEYE_ADT_VALID_STRUCTURAL": 0,
+    "WALLEYE_ADT_INVALID_ARGUMENT": 1,
+    "WALLEYE_ADT_UNSUPPORTED_POLICY_VERSION": 2,
+    "WALLEYE_ADT_INVALID_STRUCTURE": 3,
+    "WALLEYE_ADT_BOUNDS_VIOLATION": 4,
+    "WALLEYE_ADT_DUPLICATE_DECLARATION": 5,
+    "WALLEYE_ADT_UNSUPPORTED_NODE": 6,
+    "WALLEYE_ADT_UNSUPPORTED_PROPERTY": 7,
+    "WALLEYE_ADT_INVALID_PROPERTY_VALUE": 8
+  },
+  "representation": {
+    "caller_owned": true,
+    "dynamic_allocation": false,
+    "exceptions": false,
+    "rtti": false,
+    "recursion": false,
+    "global_mutable_state": false,
+    "external_runtime_dependencies": false,
+    "logical_node_accounting_bytes": 16,
+    "logical_property_accounting_bytes": 24
+  },
+  "policy_limits": {
+    "maximum_nodes": 2,
+    "maximum_depth": 1,
+    "maximum_properties_per_node": 4,
+    "maximum_property_size_bytes": 64,
+    "maximum_normalized_size_bytes": 4096,
+    "allowed_paths": [
+      "/",
+      "/chosen"
+    ],
+    "allowed_property": "name:string",
+    "root_value": "device-tree",
+    "chosen_value": "chosen",
+    "default_deny": true
+  },
+  "compiler": {
+    "version": "Debian clang version 19.1.7 (3+b1)",
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": [
+      "-march=armv8-a",
+      "-mno-outline-atomics"
+    ],
+    "freestanding_flags": [
+      "-std=c11",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-nostdinc"
+    ],
+    "runs": 2,
+    "byte_identical": true,
+    "object_format": "Mach-O 64-bit arm64 MH_OBJECT",
+    "object_size_bytes": 4128,
+    "object_sha256": "3a4c5eabcf96aaa53a234bc44e1a41c4b132e61e2e9c1e02810d83652917a3cb",
+    "linked": false
+  },
+  "host_validation": {
+    "host_tests": "passed",
+    "asan_ubsan": "passed",
+    "differential_testing": "required"
+  },
+  "preserved_guarantees": {
+    "m2_status": "valid_with_unresolved",
+    "m2_unresolved_count": 38,
+    "m3b_policy_unresolved_count": 4,
+    "platform_expert_match_enabled": false,
+    "platform_expert_start_supported": false,
+    "iokit_node_publication": "none",
+    "native_adt_parser": false,
+    "hardware_initialization": false,
+    "boot_ready": false
+  },
+  "integration": {
+    "xnu_patch_created": false,
+    "runtime_call_site": null,
+    "kernel_linked": false,
+    "kernel_built": false
+  }
+}

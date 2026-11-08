@@ -98,7 +98,7 @@
   ],
   "inputs": {
     "config/walleye-adt-policy.json": "2e2884efbf8899c90ba768c76ac6c3177cfa7096d0c9ca72f32de8ccfaa45a9b",
-    "tools/validate_walleye_adt.py": "94688e0b01a6357a197d9f74735b73c217810ca729240d146e889049bee379e8",
+    "tools/validate_walleye_adt.py": "3c928706f4d62c686ec746691bdb552dd1d290bea10e05656d14e6bcc3504e7b",
     "tests/test_validate_walleye_adt.py": "d76d9b137a6facd4b9fab56202983a5bd8fe75ace00c081a5863ea38790c9cf1",
     "fixtures/adt/minimal-structural.json": "0d667ee326006e0fcf4b605695828e4e5d6eba08533e754cb1cdf2fc50939d02",
     "patches/xnu/0001-walleye-build-skeleton.patch": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea",

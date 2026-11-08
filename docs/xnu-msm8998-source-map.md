@@ -227,3 +227,17 @@ M3B inspected the complete 81-patch plus WALLEYE 0001–0002 tree and introduced
 | `iokit/Kernel/IOPlatformExpert.cpp` | `IODTPlatformExpert::probe`, `processTopLevel`, `createNubs` | Matching uses the personality property; base processing publishes CPU/top-level nubs, so it remains unreachable in WALLEYE M3A/M3B |
 
 The host policy accepts only a synthetic `/` plus optional empty `/chosen`, with structural `name` properties and no IOKit publication. This is policy evidence, not native ADT compatibility evidence.
+
+## Phase 3 M3C normalized native helper
+
+M3C adds no XNU patch or call site. `include/walleye_adt_policy.h` and `src/walleye_adt_policy.c` implement an independently compiled C11 helper over caller-owned normalized spans.
+
+| Component | Interface | M3C result |
+| --- | --- | --- |
+| `include/walleye_adt_policy.h` | `walleye_adt_span`, `walleye_adt_node`, `walleye_adt_property` | Explicit pointer/length/capacity and fixed-width indices; no null-termination assumption |
+| `include/walleye_adt_policy.h` | `walleye_adt_result` | Stable structural result categories; no boot-readiness result |
+| `src/walleye_adt_policy.c` | `walleye_validate_normalized_adt` | Nonrecursive, allocation-free, overflow-checked M3B policy enforcement |
+| `tests/native/walleye_adt_policy_test.c` | host harness | Normal and ASan/UBSan execution cover positive, negative, pointer, bounds, duplicate, parent, and version cases |
+| `tests/test_walleye_native_adt_policy.py` | differential adapter | Supported M3B JSON trees are normalized and compared; unrepresented metadata is explicitly refused |
+
+The helper does not consume `DeviceTreeNode`, `DTEntry`, `IORegistryEntry`, or `boot_args`. A future M3D patch may stage it in the XNU build without invoking it; integration with `WalleyePlatformExpert` remains unresolved.
