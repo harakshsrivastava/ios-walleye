@@ -52,7 +52,8 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
     required = {
         "schema_version", "policy_id", "policy_version", "fixture_format",
         "scope", "native_binary_adt_parser", "boot_compatibility_claimed",
-        "identity_contract", "limits", "safe_nodes", "forbidden_node_prefixes",
+        "device_tree_contract", "identity_contract", "root_property_contract",
+        "limits", "safe_nodes", "forbidden_node_prefixes",
         "forbidden_identity_fragments", "runtime_gates", "project_dependencies",
         "provenance", "unresolved",
     }
@@ -71,6 +72,15 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
         errors.append("policy must not claim a native binary ADT parser")
     if policy["boot_compatibility_claimed"] is not False:
         errors.append("policy must not claim boot compatibility")
+    tree_contract = policy["device_tree_contract"]
+    if tree_contract != {
+        "required_native_format": "apple-device-tree-flat",
+        "validator_input_format": "walleye-synthetic-adt-registry-v1",
+        "production_producer": None,
+        "production_producer_status": "unresolved",
+        "linux_fdt_direct_reuse": False,
+    }:
+        errors.append("native format/producer boundary drift")
 
     identity = policy["identity_contract"]
     physical = identity.get("physical_board", {})
@@ -98,6 +108,15 @@ def validate_policy(policy: dict[str, Any]) -> list[str]:
         "name", "compatible", "device_type", "model"
     }:
         errors.append("XNU match-property inventory drift")
+    if policy["root_property_contract"] != {
+        "required": ["name"],
+        "optional": [],
+        "identity_bearing_unresolved": [
+            "compatible", "device_type", "model", "target-type"
+        ],
+        "unknown_property_policy": "reject",
+    }:
+        errors.append("root property contract drift")
 
     limits = policy["limits"]
     expected_limits = {
@@ -186,8 +205,8 @@ def project_consistency(policy: dict[str, Any], root: Path = ROOT) -> tuple[list
         errors.append("M3A firmware calls must remain disabled")
 
     m3 = next((item for item in plan.get("roadmap", []) if item.get("id") == "M3"), {})
-    if m3.get("status") != "m3a-completed-compile-only":
-        errors.append("port plan no longer records M3A as compile-only")
+    if m3.get("status") != "m3b-completed-offline-validation":
+        errors.append("port plan no longer records completed offline-only M3B")
     if plan.get("boot_readiness_claimed") is not False:
         errors.append("port plan must not claim boot readiness")
     return errors, unresolved

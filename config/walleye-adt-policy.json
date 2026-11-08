@@ -6,6 +6,13 @@
   "scope": "offline-structural-validation-only",
   "native_binary_adt_parser": false,
   "boot_compatibility_claimed": false,
+  "device_tree_contract": {
+    "required_native_format": "apple-device-tree-flat",
+    "validator_input_format": "walleye-synthetic-adt-registry-v1",
+    "production_producer": null,
+    "production_producer_status": "unresolved",
+    "linux_fdt_direct_reuse": false
+  },
   "identity_contract": {
     "physical_board": {
       "manufacturer": "Google",
@@ -35,6 +42,19 @@
       "target-type"
     ],
     "identity_properties_allowed_while_unresolved": false
+  },
+  "root_property_contract": {
+    "required": [
+      "name"
+    ],
+    "optional": [],
+    "identity_bearing_unresolved": [
+      "compatible",
+      "device_type",
+      "model",
+      "target-type"
+    ],
+    "unknown_property_policy": "reject"
   },
   "limits": {
     "maximum_node_count": 2,

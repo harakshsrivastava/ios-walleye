@@ -212,3 +212,18 @@ M3A directly inspected the complete 81-patch SWEET tree and added a separate com
 | `iokit/conf/files.arm64` | source registration | Adds the WALLEYE translation unit using the established empty-on-other-boards convention |
 
 The sentinel `__walleye_m3a_disabled__` is not an ADT compatible claim. Verified `walleye` / `Google Pixel 2` board names remain separate from the unresolved final ADT identity. Exact patch and compile evidence is in `config/walleye-platform-expert.json` and `evidence/walleye-m3a-validation.json`.
+
+## Phase 3 M3B ADT identity and safe-node inspection
+
+M3B inspected the complete 81-patch plus WALLEYE 0001–0002 tree and introduced no XNU patch.
+
+| Path | Symbol or structure | M3B finding |
+| --- | --- | --- |
+| `pexpert/pexpert/device_tree.h` | `DeviceTreeNode`, `DeviceTreeNodeProperty` | Native Apple flattened-tree records are structurally different from both Linux FDT and the M3B JSON fixture model |
+| `pexpert/gen/device_tree.c` | `SecureDTInit`, `SecureDTLookupEntry`, `SecureDTGetProperty`, iterators | Native traversal is region-bounded; M3B does not claim to implement this parser |
+| `pexpert/arm/pe_init.c` | `PE_init_platform` | Reads root `name`, optional `model`/`target-type`, and `/chosen` properties before IOKit matching |
+| `iokit/Kernel/IODeviceTreeSupport.cpp` | `IODeviceTreeAlloc`, `MakeReferenceTable` | Imports native ADT properties into registry entries without an M3B allowlist |
+| `iokit/Kernel/IODeviceTreeSupport.cpp` | `IODTCompareNubName` | Root matching can use `name`, `compatible`, `device_type`, or `model`; the correct WALLEYE carrier/value remains unresolved |
+| `iokit/Kernel/IOPlatformExpert.cpp` | `IODTPlatformExpert::probe`, `processTopLevel`, `createNubs` | Matching uses the personality property; base processing publishes CPU/top-level nubs, so it remains unreachable in WALLEYE M3A/M3B |
+
+The host policy accepts only a synthetic `/` plus optional empty `/chosen`, with structural `name` properties and no IOKit publication. This is policy evidence, not native ADT compatibility evidence.

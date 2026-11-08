@@ -1,0 +1,15 @@
+{
+  "fixture_format": "walleye-synthetic-adt-registry-v1",
+  "policy_version": 1,
+  "producer": {"kind": "synthetic-test-fixture", "status": "test-only", "provenance": "config/walleye-adt-policy.json"},
+  "identity": {"physical_board": {"manufacturer": "Google", "product": "Pixel 2", "codename": "walleye", "soc": "MSM8998", "status": "verified-historical-evidence", "provenance": "phase2b-platform-identity"}, "adt_root": {"status": "unresolved", "match_property": null, "match_value": null, "producer": null, "producer_status": "unresolved"}},
+  "runtime": {"platform_expert_match_enabled": false, "platform_expert_start_enabled": false, "iokit_node_publication_enabled": false, "hardware_initialization_enabled": false, "native_adt_ingestion_enabled": false},
+  "tree": {
+    "path": "/", "node_type": "root",
+    "properties": [
+      {"name": "name", "type": "string", "value": "device-tree", "provenance": "xnu-pe-init-root-lookup"},
+      {"name": "name", "type": "string", "value": "device-tree", "provenance": "xnu-pe-init-root-lookup"}
+    ],
+    "children": []
+  }
+}

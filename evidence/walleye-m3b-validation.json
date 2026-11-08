@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "milestone": "M3B",
+  "base_commit": "74e1ed9dbac0e2116bea47446664073796a1a437",
+  "checkpoints": {
+    "initial": "cec62b0aed2d53586dd161b7280bdc23219ca048",
+    "first_working_validator": "469e9f9bf51ebc7afc822922ab39cb2149098728"
+  },
+  "source_baseline": {
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb"
+  },
+  "source_inspection": [
+    {
+      "path": "pexpert/pexpert/device_tree.h",
+      "symbols": ["DeviceTreeNode", "DeviceTreeNodeProperty", "OpaqueDTEntryIterator"],
+      "finding": "native Apple flattened-tree records use node/property counts and four-byte-padded property payloads"
+    },
+    {
+      "path": "pexpert/gen/device_tree.c",
+      "symbols": ["SecureDTInit", "SecureDTLookupEntry", "SecureDTGetProperty", "SecureDTIterateEntries"],
+      "finding": "bounded native-tree traversal and property lookup; not a JSON or Linux FDT parser"
+    },
+    {
+      "path": "pexpert/arm/pe_init.c",
+      "symbols": ["PE_init_platform"],
+      "finding": "initializes the tree from boot_args and reads device-tree name/model/target-type plus chosen properties before IOKit matching"
+    },
+    {
+      "path": "iokit/Kernel/IODeviceTreeSupport.cpp",
+      "symbols": ["IODeviceTreeAlloc", "MakeReferenceTable", "IODTCompareNubName", "IODTFindMatchingEntries"],
+      "finding": "copies native ADT properties into registry entries and matches name, compatible, device_type, or model"
+    },
+    {
+      "path": "iokit/Kernel/IOPlatformExpert.cpp",
+      "symbols": ["IOPlatformExpert::start", "IODTPlatformExpert::probe", "IODTPlatformExpert::configure", "IODTPlatformExpert::processTopLevel", "IODTPlatformExpert::createNubs"],
+      "finding": "base startup establishes platform services; base DT processing publishes CPU and top-level nubs"
+    },
+    {
+      "path": "iokit/Kernel/arm/SweetPlatformExpert.cpp",
+      "symbols": ["SweetPlatformExpert::start", "SweetPlatformExpert::processTopLevel"],
+      "finding": "SWEET-specific implementation starts the base expert and publishes CPU, top-level, and arm-io children"
+    },
+    {
+      "path": "iokit/Kernel/arm/WalleyePlatformExpert.cpp",
+      "symbols": ["WalleyePlatformExpert::start", "WalleyePlatformExpert::processTopLevel"],
+      "finding": "M3A remains fail-closed and publishes no nodes"
+    }
+  ],
+  "patch_stack": {
+    "sweet_patch_count": 81,
+    "patches_0001_0002_present": true,
+    "m3a_patch_reverse_check_on_inspected_tree": "passed",
+    "new_xnu_patch_for_m3b": false,
+    "reason": "M3B is a host-side policy and validator; no XNU runtime source change is justified",
+    "inspected_tree_source_hashes": {
+      "iokit/Kernel/arm/WalleyePlatformExpert.cpp": "6e9539a03b7ed5b0a9b7fad4cd8f237e24defad2f9b3500429f31ed7d78876c6",
+      "pexpert/pexpert/arm64/WALLEYE.h": "ea1e77d3f6f5a969ab3c24b6ca07eeea21daa94b2a09bfc2d16dd04b51e35a3f"
+    }
+  },
+  "policy_validation": {
+    "fixture": "fixtures/adt/minimal-structural.json",
+    "status": "valid_with_unresolved",
+    "errors": [],
+    "policy_unresolved_count": 4,
+    "combined_unresolved_count": 42,
+    "native_adt_compatibility_proven": false,
+    "runtime_enabled": false
+  },
+  "m2_consistency": {
+    "status": "valid_with_unresolved",
+    "errors": [],
+    "unresolved_count": 38,
+    "requirements_resolved_by_m3b": 0
+  },
+  "m3a_consistency": {
+    "runtime_match_enabled": false,
+    "start_supported": false,
+    "node_publication": "none",
+    "fail_closed": true
+  },
+  "safe_node_policy": {
+    "allowed_paths": ["/", "/chosen"],
+    "maximum_node_count": 2,
+    "maximum_tree_depth": 1,
+    "maximum_property_size_bytes": 64,
+    "default_deny": true,
+    "hardware_nodes_allowed": false,
+    "negative_fixture_count": 7
+  },
+  "unsupported_paths": [
+    "native binary ADT parsing or production",
+    "runtime Platform Expert matching or startup",
+    "IOKit nub publication",
+    "CPU, GIC, timer, UART, display, GPU, storage, radio, security, or peripheral nodes",
+    "firmware and bootloader handoff",
+    "kernel placement or boot readiness"
+  ],
+  "inputs": {
+    "config/walleye-adt-policy.json": "2e2884efbf8899c90ba768c76ac6c3177cfa7096d0c9ca72f32de8ccfaa45a9b",
+    "tools/validate_walleye_adt.py": "94688e0b01a6357a197d9f74735b73c217810ca729240d146e889049bee379e8",
+    "tests/test_validate_walleye_adt.py": "d76d9b137a6facd4b9fab56202983a5bd8fe75ace00c081a5863ea38790c9cf1",
+    "fixtures/adt/minimal-structural.json": "0d667ee326006e0fcf4b605695828e4e5d6eba08533e754cb1cdf2fc50939d02",
+    "patches/xnu/0001-walleye-build-skeleton.patch": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea",
+    "patches/xnu/0002-walleye-platform-expert.patch": "88c4d164e42edf65c6af0fa9b9fa31f6f75f137dd9af973003e14e07aeaebf82"
+  },
+  "regression_suite": {
+    "framework": "python3 -m unittest discover -s tests -v",
+    "tests_run": 91,
+    "failures": 0,
+    "errors": 0,
+    "result": "passed"
+  },
+  "claims": {
+    "native_adt_parser": false,
+    "runtime_match_enabled": false,
+    "platform_expert_started": false,
+    "nodes_published": false,
+    "kernel_built": false,
+    "device_accessed": false,
+    "boot_ready": false
+  }
+}
