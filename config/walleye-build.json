@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "milestone": "M1",
+  "configuration": "WALLEYE",
+  "status": "compile_only",
+  "boot_readiness_claimed": false,
+  "source_baseline": {
+    "xnu_repository": "apple-oss-distributions/xnu",
+    "xnu_release": "xnu-8796.141.3",
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "ios_sweet_repository": "dipa-studio/ios-sweet",
+    "ios_sweet_commit": "45263bee51df4a0f55cdf9c649af886399488ddb",
+    "sweet_patch_count": 81,
+    "patch_precondition": "SWEET patches 0001-0009; later SWEET patches do not alter MakeInc.def or board_config.h"
+  },
+  "compiler": {
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": ["-march=armv8-a", "-mno-outline-atomics"],
+    "cpu_specific_flags": [],
+    "machine_definition": "-DARM64_BOARD_CONFIG_WALLEYE",
+    "mach_o_architecture": "arm64",
+    "abi_assumptions": {
+      "execution_state": "AArch64",
+      "data_model": "LP64",
+      "endianness": "little",
+      "pointer_authentication": false,
+      "arm64e": false,
+      "freestanding": true,
+      "xnu_compile_page_granule_bytes": 4096,
+      "page_granule_status": "compile-only default; runtime compatibility unresolved"
+    }
+  },
+  "isa_policy": {
+    "selected_baseline": "Armv8-A base architecture",
+    "selection_status": "conservative compile policy, not a maximal CPU-feature inventory",
+    "target_hardware": "Qualcomm MSM8998 / Kryo 280",
+    "provenance": [
+      "Phase 3 task identifies MSM8998 Kryo 280",
+      "docs/xnu-msm8998-port-architecture.md requires an allowlisted baseline and forbids carrying the SWEET ARMv8.2 assumption",
+      "ios-sweet patch 0004 directly sets -march=armv8.2-a+crypto for SWEET"
+    ],
+    "not_enabled_without_evidence": [
+      "Armv8.1-A or later mandatory feature sets",
+      "Armv8.2-A",
+      "crypto extension code generation",
+      "pointer authentication and arm64e",
+      "LSE atomics",
+      "PAN compile declaration",
+      "16 KiB translation granule"
+    ],
+    "unknown_maximal_features": true
+  },
+  "sweet_audit": {
+    "observed_flags": ["-march=armv8.2-a+crypto"],
+    "observed_cpu_assumptions": ["Kryo 470", "Cortex-A76", "Cortex-A55"],
+    "observed_feature_macros_not_carried": [
+      "__ARM_V8_CRYPTO_EXTENSIONS__",
+      "__ARM_PAN_AVAILABLE__",
+      "__ARM_16K_PG__",
+      "HAS_GIC_V3",
+      "ARM_ARCH_TIMER"
+    ],
+    "observed_hardware_paths_not_carried": [
+      "SWEET framebuffer diagnostics",
+      "SWEET PSCI SMC CPU_ON",
+      "SWEET GIC programming",
+      "SWEET UART/framebuffer console",
+      "SWEET storage and peripheral drivers"
+    ]
+  },
+  "machine_boundary": {
+    "build_identifier": "WALLEYE",
+    "board_definition": "ARM64_BOARD_CONFIG_WALLEYE",
+    "plain_arm64": true,
+    "compile_cpu_limit": 1,
+    "compile_cpu_limit_status": "fail-closed build limit, not physical topology",
+    "platform_expert_implemented": false,
+    "feature_gates": {
+      "platform_expert": false,
+      "firmware_calls": false,
+      "smp": false,
+      "gic": false,
+      "timer": false,
+      "uart": false,
+      "framebuffer": false,
+      "storage": false
+    }
+  },
+  "source_artifacts": [
+    {
+      "path": "patches/xnu/0001-walleye-build-skeleton.patch",
+      "sha256": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea"
+    },
+    {
+      "path": "overlays/walleye/pexpert/pexpert/arm64/WALLEYE.h",
+      "sha256": "42c4f6fe6fad6a877dd2de08ce93890a4b09b093c2f7772571b11565269bcd19"
+    },
+    {
+      "path": "overlays/walleye/config/MASTER.arm64.walleye",
+      "sha256": "b1d0374584cc28df81ab8e418440770a5a4341db6d142c429fe10d6f05a2d344"
+    },
+    {
+      "path": "overlays/walleye/compile_probe.c",
+      "sha256": "ae1af361077343340b54cb9836779947e07fa50ccb29b333d2a82c0e138bdb94"
+    }
+  ],
+  "validation": {
+    "build_script": "tools/build_walleye_skeleton.py",
+    "validator": "tools/validate_walleye_build.py",
+    "last_result": "evidence/walleye-m1-build.json",
+    "full_xnu_build_expected": false,
+    "link_expected": false
+  },
+  "unresolved": [
+    "initial exception level and boot register state",
+    "Kryo 280 CPU ID and optional feature-register inventory",
+    "runtime page-granule support and selected translation regime",
+    "complete CPU topology and boot MPIDR",
+    "PSCI or alternate firmware interface",
+    "GIC security ownership and region sizes",
+    "timer counter frequency and routing",
+    "UART and framebuffer readiness",
+    "complete memory ownership and reservation placement",
+    "Apple SDK/KDK build dependencies"
+  ]
+}

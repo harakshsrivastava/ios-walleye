@@ -4,15 +4,17 @@ The milestones are ordered by the smallest useful offline-verifiable change. Eac
 
 ## M1 — WALLEYE machine-configuration skeleton
 
+- Status: completed as a compile-only milestone on `feature/walleye-build-skeleton`.
 - Objective: create a distinct compile-only target with all hardware services disabled.
-- Components: `makedefs/MakeInc.def`, proposed `pexpert/pexpert/arm64/WALLEYE.h`, `pexpert/pexpert/arm64/board_config.h`, proposed `config/MASTER.arm64.walleye`.
-- Dependencies: reviewed MSM8998/Kryo 280 compiler ISA baseline.
-- Offline tests: build-definition lint, preprocessor assertions, scan for SWEET identifiers/addresses.
-- Acceptance: no SWEET alias; no framebuffer/UART/PSCI/GIC write enabled; explicit conservative ISA flags.
-- Blocker: compiler architecture baseline is not yet proven.
+- Components: isolated patch for `makedefs/MakeInc.def` and `pexpert/pexpert/arm64/board_config.h`; new `WALLEYE.h` and `MASTER.arm64.walleye` overlays; manifest, validator and compile probe.
+- ISA outcome: plain `arm64`, `arm64-apple-darwin22`, `-march=armv8-a -mno-outline-atomics`, and no CPU-specific flag.
+- Offline results: manifest validation passed; patch application to the pinned pre-M1 source passed; freestanding host probe compilation passed; all hardware feature gates remained false.
+- Tooling boundary: ARM64 Mach-O compilation was unavailable because the executor had no Clang cross-compiler. Linking and a kernel build were not attempted.
+- Acceptance: satisfied for the compile-only boundary; no SWEET alias/address, firmware call, framebuffer, UART, SMP, GIC, timer or storage implementation is enabled.
+- Remaining blockers: Apple build tooling and every Phase 2C firmware/hardware contract remain unresolved.
 - Complexity: low.
 
-This is the highest-priority next implementation task because it creates a reviewable compilation boundary without pretending a handoff or peripheral is ready.
+Evidence and reproduction details are in `docs/walleye-isa-baseline.md`, `docs/walleye-build-skeleton.md`, and `evidence/walleye-m1-build.json`.
 
 ## M2 — Boot-argument and ADT contract
 
@@ -76,10 +78,12 @@ This is the highest-priority next implementation task because it creates a revie
 
 ## Stop/go rules
 
-- M1 can proceed after an ISA evidence review.
+- M1 is complete at the compile-only boundary; it does not authorize hardware initialization.
 - M2 may implement only schema/validation while reservation evidence is missing; it must reject production of a handoff contract.
 - M3 can compile against fixtures but must not claim runtime node safety before M2 resolves.
 - M4–M5 remain non-activating until their named evidence gates close.
 - M7 must not be started by copying SWEET's `smc #0` path.
+
+The next milestone is M2's schema/validator portion. Its handoff-production path remains blocked until complete reservation and producer evidence exists.
 
 Machine-readable milestone fields, dependencies and acceptance criteria are in `config/xnu-msm8998-port-plan.json` and are enforced by `tools/validate_xnu_msm8998_plan.py`.

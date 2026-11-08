@@ -131,8 +131,8 @@ def validate(data, platform=None):
             _nonempty_list(item["dependencies"], path+"/dependencies", errors, allow_empty=True)
             if item["complexity"] not in ("low", "medium", "high", "very-high"): errors.append(path+"/complexity: unsupported")
         if len(ids) != len(set(ids)): errors.append("/roadmap: duplicate milestone IDs")
-    if not isinstance(data["highest_priority_next_task"], str) or not data["highest_priority_next_task"].startswith("M1:"):
-        errors.append("/highest_priority_next_task: must identify M1")
+    if not isinstance(data["highest_priority_next_task"], str) or not data["highest_priority_next_task"].startswith("M2:"):
+        errors.append("/highest_priority_next_task: must identify M2 after completed M1")
     _nonempty_list(data["unresolved"], "/unresolved", errors)
     forbidden_fragments = ("boot ready", "bootable", "safe loader address")
     rendered = json.dumps(data).lower()

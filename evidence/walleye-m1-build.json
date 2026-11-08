@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "milestone": "M1",
+  "configuration": "WALLEYE",
+  "source": {
+    "path": "/workspace/work/xnu-walleye-m1",
+    "xnu_commit": "1b191cb58250d0705d8a51287127505aa4bc0789",
+    "prerequisite": "SWEET patches 0001-0009"
+  },
+  "inputs": {
+    "config/walleye-build.json": "a6641557c8622fb92038b3172c03a3a397de2cfe1d6f1ad111f330da70e622c6",
+    "patches/xnu/0001-walleye-build-skeleton.patch": "87db1acfe2ee9e9633096466a05746f1952aa7e8cd40549882bac25b8f79a7ea",
+    "overlays/walleye/pexpert/pexpert/arm64/WALLEYE.h": "42c4f6fe6fad6a877dd2de08ce93890a4b09b093c2f7772571b11565269bcd19",
+    "overlays/walleye/config/MASTER.arm64.walleye": "b1d0374584cc28df81ab8e418440770a5a4341db6d142c429fe10d6f05a2d344",
+    "overlays/walleye/compile_probe.c": "ae1af361077343340b54cb9836779947e07fa50ccb29b333d2a82c0e138bdb94"
+  },
+  "stages": {
+    "manifest_validation": "passed",
+    "source_provenance": "passed",
+    "patch_application_check": "passed",
+    "configuration_parsing": {
+      "static_manifest": "passed",
+      "xnu_config_tool": "not_attempted: Apple build dependencies unavailable"
+    },
+    "host_source_compilation": "passed",
+    "arm64_macho_source_compilation": "unavailable",
+    "object_generation": {
+      "host": {
+        "path": "walleye-config-probe.host.o",
+        "size_bytes": 1128,
+        "sha256": "6fecb29a52be2f496e85bdeaf64eb4d8a6c8ee390f26b6232723147781923076"
+      },
+      "arm64_macho": null
+    },
+    "linking": "not_attempted: M1 has no link target",
+    "kernel_build": "not_attempted: Apple SDK/KDK build dependencies unavailable"
+  },
+  "toolchain": {
+    "host_compiler": "/usr/bin/cc",
+    "host_compiler_version": "cc (Debian 14.2.0-19) 14.2.0",
+    "target_compiler": null,
+    "target_compiler_version": null,
+    "target_triple": "arm64-apple-darwin22",
+    "architecture_flags": [
+      "-march=armv8-a",
+      "-mno-outline-atomics"
+    ]
+  },
+  "success": true,
+  "failures": [],
+  "claims": {
+    "linked": false,
+    "kernel_built": false,
+    "bootable": false
+  }
+}
