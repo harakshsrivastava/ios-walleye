@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "contract": {
+    "id": "ios-walleye-xnu-boot-information",
+    "version": 1,
+    "purpose": "offline validation only; not a firmware handoff or boot configuration",
+    "boot_ready": false
+  },
+  "board": {
+    "device": "Google Pixel 2",
+    "codename": "walleye",
+    "soc": "Qualcomm MSM8998",
+    "architecture": "arm64",
+    "provenance": "project-target",
+    "adt_identity": {
+      "status": "unresolved",
+      "root_compatible": null,
+      "target_type": null,
+      "model": null
+    }
+  },
+  "execution_state": {
+    "aarch64_required": true,
+    "initial_exception_level": {"value": null, "status": "unresolved"},
+    "x0_boot_args_pointer": {"value": null, "status": "unresolved"},
+    "mmu_state": {"value": null, "status": "unresolved"},
+    "cache_state": {"value": null, "status": "unresolved"},
+    "writable_bootstrap_tables": {"value": null, "status": "unresolved"},
+    "entry_contract_provenance": "xnu-arm64-entry"
+  },
+  "kernel_image": {
+    "format_required": "mach-o64",
+    "architecture_required": "arm64",
+    "physical_load_address": {"value": null, "status": "unresolved"},
+    "physical_entry_address": {"value": null, "status": "unresolved"},
+    "image_size": {"value": null, "status": "unresolved"},
+    "linked_virtual_base": {"value": null, "status": "unresolved"},
+    "source_provenance": "xnu-arm64-entry"
+  },
+  "boot_args": {
+    "abi": "xnu-8796-arm64-boot_args",
+    "structure_revision_required": 2,
+    "structure_version_required": 2,
+    "structure_provenance": "xnu-boot-args-layout",
+    "pointer": {"value": null, "status": "unresolved"},
+    "size_bytes": {"value": null, "status": "unresolved"},
+    "fields": {
+      "virtBase": {"value": null, "status": "unresolved"},
+      "physBase": {"value": null, "status": "unresolved"},
+      "memSize": {"value": null, "status": "unresolved"},
+      "topOfKernelData": {"value": null, "status": "unresolved"},
+      "deviceTreeP": {"value": null, "status": "unresolved"},
+      "deviceTreeLength": {"value": null, "status": "unresolved"},
+      "commandLine": {"value": null, "status": "unresolved"},
+      "bootFlags": {"value": null, "status": "unresolved"},
+      "memSizeActual": {"value": null, "status": "unresolved"}
+    },
+    "video": {
+      "status": "unsupported",
+      "reason": "M1 disables framebuffer diagnostics; no walleye boot-video contract exists"
+    }
+  },
+  "physical_memory": {
+    "address_bits": 64,
+    "ownership_status": "unresolved",
+    "regions": [
+      {
+        "id": "runtime-fdt-memory-declaration",
+        "kind": "declared-ram-evidence",
+        "start": "0x80000000",
+        "size": "0xfe4c0000",
+        "alignment": "0x1000",
+        "status": "historical-report",
+        "provenance": "runtime-fdt-memory"
+      }
+    ],
+    "loader_safe_ranges": null,
+    "managed_ranges": null
+  },
+  "reserved_memory": {
+    "inventory_status": "summary-only",
+    "total_children": 20,
+    "static_children": 15,
+    "dynamic_children": 5,
+    "entries": [],
+    "dynamic_placement_status": "unresolved",
+    "provenance": "runtime-fdt-reserved-summary"
+  },
+  "device_tree": {
+    "handoff": {
+      "format": "apple-device-tree-flat",
+      "status": "unresolved",
+      "pointer": null,
+      "length": null,
+      "provenance": "xnu-apple-device-tree-format"
+    },
+    "linux_source_evidence": {
+      "format": "linux-fdt-v17",
+      "sha256": "63514aac0e51cb2467051919686eceef8957be95e1de42970fc5a3f4abfe8960",
+      "size_bytes": 466549,
+      "status": "historical-report",
+      "provenance": "runtime-fdt-artifact"
+    },
+    "translation": {
+      "status": "unresolved",
+      "direct_reuse_permitted": false,
+      "required_outputs": [
+        "root identity properties",
+        "/chosen",
+        "/chosen/memory-map",
+        "/cpus with Apple-consumer property encodings",
+        "/arm-io with validated child ranges"
+      ],
+      "blocked_inputs": [
+        "complete boot-time memory ownership",
+        "15 static reservation ranges",
+        "five dynamic reservation placements",
+        "verified CPU MPIDRs and boot CPU",
+        "final WALLEYE ADT identity strings"
+      ]
+    }
+  },
+  "firmware_services": {
+    "psci": {"version": null, "conduit": null, "cpu_on": null, "status": "unresolved"},
+    "secure_monitor": {"contract": null, "status": "unresolved"},
+    "gic_ownership": {"value": null, "status": "unresolved"},
+    "counter_access": {"value": null, "status": "unresolved"}
+  },
+  "interrupt_controller": {
+    "type": {"value": "gicv3", "status": "historical-report", "provenance": "runtime-fdt-gic"},
+    "distributor": {
+      "base": {"value": "0x17a00000", "status": "historical-report", "provenance": "runtime-fdt-gicd"},
+      "size": {"value": null, "status": "unresolved"}
+    },
+    "redistributor": {
+      "base": {"value": "0x17b00000", "status": "historical-report", "provenance": "runtime-fdt-gicr"},
+      "size": {"value": null, "status": "unresolved"},
+      "stride": {"value": "0x20000", "status": "historical-report", "provenance": "runtime-fdt-gicr-stride"}
+    },
+    "security_state": "unresolved",
+    "system_register_interface": "unresolved",
+    "register_writes_permitted": false
+  },
+  "timer": {
+    "type": "arm-architected-virtual",
+    "intid": {"value": 19, "status": "historical-report", "provenance": "runtime-fdt-vtimer"},
+    "counter_frequency_hz": {"value": null, "status": "unresolved"},
+    "routing_state": "unresolved",
+    "register_access": "unresolved",
+    "enable_permitted": false
+  },
+  "initialization_dependencies": [
+    {"id": "entry-state", "depends_on": []},
+    {"id": "boot-args-bounds", "depends_on": ["entry-state"]},
+    {"id": "memory-ownership", "depends_on": ["boot-args-bounds"]},
+    {"id": "adt-validation", "depends_on": ["memory-ownership"]},
+    {"id": "platform-expert", "depends_on": ["adt-validation"]},
+    {"id": "gic-policy", "depends_on": ["platform-expert"]},
+    {"id": "timer-policy", "depends_on": ["gic-policy"]},
+    {"id": "primary-cpu", "depends_on": ["timer-policy"]},
+    {"id": "secondary-cpus", "depends_on": ["primary-cpu"]}
+  ],
+  "provenance": {
+    "project-target": {"status": "project-target", "source": "ios-walleye target definition"},
+    "xnu-arm64-entry": {"status": "direct-source", "source": "xnu 1b191cb5: osfmk/arm64/start.s::_start/start_first_cpu"},
+    "xnu-boot-args-layout": {"status": "direct-source", "source": "xnu 1b191cb5: pexpert/pexpert/arm64/boot.h::boot_args"},
+    "xnu-apple-device-tree-format": {"status": "direct-source", "source": "xnu 1b191cb5: pexpert/pexpert/device_tree.h and pexpert/gen/device_tree.c"},
+    "runtime-fdt-artifact": {"status": "historical-report", "source": "runtime FDT recovery record", "sha256": "63514aac0e51cb2467051919686eceef8957be95e1de42970fc5a3f4abfe8960"},
+    "runtime-fdt-memory": {"status": "historical-report", "source": "config/msm8998-platform.json memory declaration"},
+    "runtime-fdt-reserved-summary": {"status": "historical-report", "source": "config/msm8998-platform.json reserved-memory summary"},
+    "runtime-fdt-gic": {"status": "historical-report", "source": "config/msm8998-platform.json interrupt controller type"},
+    "runtime-fdt-gicd": {"status": "historical-report", "source": "config/msm8998-platform.json GIC distributor base"},
+    "runtime-fdt-gicr": {"status": "historical-report", "source": "config/msm8998-platform.json GIC redistributor base"},
+    "runtime-fdt-gicr-stride": {"status": "historical-report", "source": "config/msm8998-platform.json GIC redistributor stride"},
+    "runtime-fdt-vtimer": {"status": "historical-report", "source": "config/msm8998-platform.json virtual timer INTID"}
+  },
+  "unresolved_boot_critical": [
+    "initial exception level and register/MMU/cache state",
+    "boot_args address, bounds, values and producer",
+    "kernel physical placement and entry address",
+    "complete boot-time memory ownership",
+    "15 static reserved-memory ranges and five dynamic placements",
+    "FDT-to-ADT translation and final identity",
+    "boot CPU MPIDR and topology",
+    "PSCI and secure-monitor contracts",
+    "GIC region sizes, security ownership and system-register access",
+    "timer frequency, routing and register access"
+  ]
+}
